@@ -1,0 +1,834 @@
+0000:                 * f9dasm: M6800/1/2/3/8/9 / H6309 Binary/OS9/FLEX9 Disassembler V1.78
+0000:                 * Loaded binary file 6809_Mon5.bin
+0000:                 
+0000:                         SETLI 999
+**** Illegal mnemonic
+0000:                 *****************************************************
+0000:                 ** Used Labels                                      *
+0000:                 *****************************************************
+0000:                 
+0000:                 
+0000:                 Z0142   EQU     $0142   ; Forth cold entry
+0000:                 Z0194   EQU     $0194   ; Forth warm entry
+0000:                 M0400   EQU     $0400   ; keyboard delay
+0000:                 
+0000:                 M8000   EQU     $8000 ; VIA
+0000:                 M8002   EQU     $8002 ; VIA_
+0000:                 
+0000:                 MC400   EQU     $C400 ; ACIA
+0000:                 
+0000:                 MC800   EQU     $C800 ; LCD
+0000:                 MC801   EQU     $C801 ; LCD_
+0000:                 
+0000:                 MD000   EQU     $D000 ; CLOCK
+0000:                 MD001   EQU     $D001 ; CLOCK_
+0000:                 
+0000:                 ME100   EQU     $E100 ; RX BUFFER
+0000:                 ME200   EQU     $E200 ; FILL INDEX
+0000:                 ME201   EQU     $E201 ; FULL FLAG
+0000:                 ME7B0   EQU     $E7B0 ; STACK
+0000:                 ME7D0   EQU     $E7D0 ; MONITOR STACK
+0000:                 ZE7E5   EQU     $E7E5 ; SW3 / USR VEC
+0000:                 ZE7E7   EQU     $E7E7 ; SW2 VEC
+0000:                 ZE7E9   EQU     $E7E9 ; FIQ VEC
+0000:                 ME7EC   EQU     $E7EC ; KB TMP
+0000:                 ME7ED   EQU     $E7ED ; CHSM
+0000:                 ZE7F2   EQU     $E7F2 ; NMI VEC
+0000:                 ZE7F4   EQU     $E7F4 ; IRQ VEC
+0000:                 ZE7F6   EQU     $E7F6 ; SWI VEC
+0000:                 M00F8   EQU     $F8   ; stack save 
+0000:                 ME7F8   EQU     $E7F8 ; STK SAV
+0000:                 ME7FA   EQU     $E7FA ; QT VEC
+0000:                 ZE7FC   EQU     $E7FC ; OUT VEC
+0000:                 ZE7FE   EQU     $E7FE ; IN VEC
+0000:                 
+0000:                 *****************************************************
+0000:                 ** Program Code / Data Areas                        *
+0000:                 *****************************************************
+0000:                 
+0000:                 *****************************************************
+0000:                 **      6551 ACIA                                   *
+0000:                 *****************************************************
+0000:                         ORG     $F800 
+F800:                 
+F800: 2006            ZF800   BRA     ZF808                    ;*F800: 20 06          ' .'
+F802: 203B            MF802   BRA     ZF83C                    ;*F802: 20 38          ' 8'
+F804: 2048                    BRA     ZF84B                    ;*F804: 20 45          ' E'
+F806: 2055                    BRA     ZF85A                    ;*F806: 20 52          ' R'
+F808: 3436            ZF808   PSHS    Y,X,D                    ;*F808: 34 36          '46'
+F80A: 8EC400                  LDX     #MC400                   ;*F80A: 8E C4 00       '...'
+F80D: 869E                    LDA     #$9E                     ;*F80D: 86 9E          '..'
+F80F: A701                    STA     $01,X                    ;*F80F: A7 01          '..'
+F811: A703                    STA     $03,X                    ;*F811: A7 03          '..'
+F813: 860B                    LDA     #$0B                     ;*F813: 86 0B          '..'
+F815: A702                    STA     $02,X                    ;*F815: A7 02          '..'
+F817: A601                    LDA     $01,X                    ;*F817: A6 01          '..'
+F819: 8420                    ANDA    #$20                     ;*F819: 84 20          '. '
+F81B: A684                    LDA     ,X                       ;*F81B: A6 84          '..'
+F81D: 2010                    BRA     ZF82D                    ;*F81D: 20 0E          ' .'
+F81F: 318D003A                LEAY    <ZF85A,PCR               ;*F81F: 31 8C 38       '1.8'
+**** Relative branch out of range
+F823: 10BFE7FA                STY     ME7FA                    ;*F822: 10 BF E7 FA    '....'
+F827: 318D0014                LEAY    <ZF83C,PCR               ;*F826: 31 8C 13       '1..'
+**** Relative branch out of range
+F82B: 10BFE7FE                STY     ZE7FE                    ;*F829: 10 BF E7 FE    '....'
+F82F: A601            ZF82D   LDA     $01,X                    ;*F82D: A6 01          '..'
+F831: 8440                    ANDA    #$40                     ;*F82F: 84 40          '.@'
+F833: 2008                    BRA     ZF83A                    ;*F831: 20 07          ' .'
+F835: 318D0015                LEAY    <ZF84B,PCR               ;*F833: 31 8C 15       '1..'
+**** Relative branch out of range
+F839: 10BFE7FC                STY     ZE7FC                    ;*F836: 10 BF E7 FC    '....'
+F83D: 35B6            ZF83A   PULS    PC,Y,X,D                 ;*F83A: 35 B6          '5.'
+F83F: 3414            ZF83C   PSHS    X,B                      ;*F83C: 34 14          '4.'
+F841: 8EC400                  LDX     #MC400                   ;*F83E: 8E C4 00       '...'
+F844: E601            ZF841   LDB     $01,X                    ;*F841: E6 01          '..'
+F846: C508                    BITB    #$08                     ;*F843: C5 08          '..'
+F848: 27FA                    BEQ     ZF841                    ;*F845: 27 FA          ''.'
+F84A: A684                    LDA     ,X                       ;*F847: A6 84          '..'
+F84C: 3594                    PULS    PC,X,B                   ;*F849: 35 94          '5.'
+F84E: 3414            ZF84B   PSHS    X,B                      ;*F84B: 34 14          '4.'
+F850: 8EC400                  LDX     #MC400                   ;*F84D: 8E C4 00       '...'
+F853: E601            ZF850   LDB     $01,X                    ;*F850: E6 01          '..'
+F855: C510                    BITB    #$10                     ;*F852: C5 10          '..'
+F857: 27FA                    BEQ     ZF850                    ;*F854: 27 FA          ''.'
+F859: A784                    STA     ,X                       ;*F856: A7 84          '..'
+F85B: 3594                    PULS    PC,X,B                   ;*F858: 35 94          '5.'
+F85D: 3410            ZF85A   PSHS X                             ;*F85A: 34 10          '4.'
+F85F: 8EC400                  LDX     #MC400                   ;*F85C: 8E C4 00       '...'
+F862: A601                    LDA     $01,X                    ;*F85F: A6 01          '..'
+F864: 8508                    BITA    #$08                     ;*F861: 85 08          '..'
+F866: 2712                    BEQ     ZF877                    ;*F863: 27 12          ''.'
+F868: A684                    LDA     ,X                       ;*F865: A6 84          '..'
+F86A: 811B                    CMPA    #$1B                     ;*F867: 81 1B          '..'
+F86C: 260D                    BNE     ZF878                    ;*F869: 26 0D          '&.'
+F86E: A601            ZF86B   LDA     $01,X                    ;*F86B: A6 01          '..'
+F870: 8508                    BITA    #$08                     ;*F86D: 85 08          '..'
+F872: 27FA                    BEQ     ZF86B                    ;*F86F: 27 FA          ''.'
+F874: A684                    LDA     ,X                       ;*F871: A6 84          '..'
+F876: 811B                    CMPA    #$1B                     ;*F873: 81 1B          '..'
+F878: 2601                    BNE     ZF878                    ;*F875: 26 01          '&.'
+F87A: 4F              ZF877   CLRA                             ;*F877: 4F             'O'
+F87B: 3590            ZF878   PULS    PC,X                     ;*F878: 35 90          '5.'
+F87D: B6C400                  LDA     MC400                    ;*F87A: B6 C4 00       '...'
+F880: 308DE87C                LEAX    ME100,PCR                ;*F87D: 30 8D E8 7F    '0...'
+F884: F6E200                  LDB     ME200                    ;*F881: F6 E2 00       '...'
+F887: A785                    STA     B,X                      ;*F884: A7 85          '..'
+F889: 7CE200                  INC     ME200                    ;*F886: 7C E2 00       '|..'
+F88C: C180                    CMPB    #$80                     ;*F889: C1 80          '..'
+F88E: 2D06                    BLT     ZF893                    ;*F88B: 2D 06          '-.'
+F890: 7AE200                  DEC     ME200                    ;*F88D: 7A E2 00       'z..'
+F893: 7CE201                  INC     ME201                    ;*F890: 7C E2 01       '|..'
+F896: 810A            ZF893   CMPA    #$0A                     ;*F893: 81 0A          '..'
+F898: 2600                    BNE     ZF897                    ;*F895: 26 00          '&.'
+F89A: 39              ZF897   RTS                              ;*F897: 39             '9'
+F89B:                 
+F89B:                 *****************************************************
+F89B:                 **      LCD                                         *
+F89B:                 *****************************************************
+F89B:                         ORG     $F900 
+F900:                 
+F900: 200C            ZF900   BRA     ZF90E                    ;*F900: 20 0C          ' .'
+F902: 2016            ZF902   BRA     ZF91A                    ;*F902: 20 16          ' .'
+F904: 2032            ZF904   BRA     ZF938                    ;*F904: 20 32          ' 2'
+F906: 2028            ZF906   BRA     ZF930                    ;*F906: 20 28          ' ('
+F908: 2034            ZF908   BRA     ZF93E                    ;*F908: 20 34          ' 4'
+F90A: 204C            ZF90A   BRA     ZF958                    ;*F90A: 20 4C          ' L'
+F90C: 2054            ZF90C   BRA     ZF962                    ;*F90C: 20 54          ' T'
+F90E: 3406            ZF90E   PSHS D                             ;*F90E: 34 06          '4.'
+F910: 1F10                    TFR     X,D                      ;*F910: 1F 10          '..'
+F912: 8D06                    BSR     ZF91A                    ;*F912: 8D 06          '..'
+F914: 1E98                    EXG     B,A                      ;*F914: 1E 98          '..'
+F916: 8D02                    BSR     ZF91A                    ;*F916: 8D 02          '..'
+F918: 3586                    PULS    PC,D                     ;*F918: 35 86          '5.'
+F91A: 3402            ZF91A   PSHS A                             ;*F91A: 34 02          '4.'
+F91C: 47                      ASRA                             ;*F91C: 47             'G'
+F91D: 47                      ASRA                             ;*F91D: 47             'G'
+F91E: 47                      ASRA                             ;*F91E: 47             'G'
+F91F: 47                      ASRA                             ;*F91F: 47             'G'
+F920: 8D02                    BSR     ZF924                    ;*F920: 8D 02          '..'
+F922: 3502                    PULS A                             ;*F922: 35 02          '5.'
+F924: 840F            ZF924   ANDA    #$0F                     ;*F924: 84 0F          '..'
+F926: 810A                    CMPA    #$0A                     ;*F926: 81 0A          '..'
+F928: 2502                    BCS     ZF92C                    ;*F928: 25 02          '%.'
+F92A: 8B07                    ADDA    #$07                     ;*F92A: 8B 07          '..'
+F92C: 8B30            ZF92C   ADDA    #$30                     ;*F92C: 8B 30          '.0'
+F92E: 200A                    BRA     ZF93A                    ;*F92E: 20 0A          ' .'
+F930: 860D            ZF930   LDA     #$0D                     ;*F930: 86 0D          '..'
+F932: 8D06                    BSR     ZF93A                    ;*F932: 8D 06          '..'
+F934: 860A                    LDA     #$0A                     ;*F934: 86 0A          '..'
+F936: 2002                    BRA     ZF93A                    ;*F936: 20 02          ' .'
+F938: 8620            ZF938   LDA     #$20                     ;*F938: 86 20          '. '
+F93A: 6E9FE7FC        ZF93A   JMP     [ZE7FC]                  ;*F93A: 6E 9F E7 FC    'n...'
+F93E: 3416            ZF93E   PSHS    X,D                      ;*F93E: 34 16          '4.'
+F940:                 ;        LEAX    MFDDE,PCR                ;*F940: 30 8D 04 9A    '0...'
+F940: 308D0495                LEAX    LCT3,PCR                ;*F940: 30 8D 04 9A    '0...'
+F944: A680                    LDA     ,X+                      ;*F944: A6 80          '..'
+F946: E680            ZF946   LDB     ,X+                      ;*F946: E6 80          '..'
+F948: 8D72                    BSR     ZF9BA                    ;*F948: 8D 70          '.p'
+F94A: 4A                      DECA                             ;*F94A: 4A             'J'
+F94B: 26F9                    BNE     ZF946                    ;*F94B: 26 F9          '&.'
+F94D: E680                    LDB     ,X+                      ;*F94D: E6 80          '..'
+F94F: A680            ZF94F   LDA     ,X+                      ;*F94F: A6 80          '..'
+F951: 8DB9                    BSR     ZF90C                    ;*F951: 8D B9          '..'
+F953: 5A                      DECB                             ;*F953: 5A             'Z'
+F954: 26F9                    BNE     ZF94F                    ;*F954: 26 F9          '&.'
+F956: 3596                    PULS    PC,X,D                   ;*F956: 35 96          '5.'
+F958: 3416            ZF958   PSHS    X,D                      ;*F958: 34 16          '4.'
+F95A: 308CAF                  LEAX    ZF90C,PCR                ;*F95A: 30 8C AF       '0..'
+F95D: BFE7FC                  STX     ZE7FC                    ;*F95D: BF E7 FC       '...'
+F960: 3596                    PULS    PC,X,D                   ;*F960: 35 96          '5.'
+F962: 3416            ZF962   PSHS    X,D                      ;*F962: 34 16          '4.'
+F964: 847F                    ANDA    #$7F                     ;*F964: 84 7F          '..'
+F966: 8118                    CMPA    #$18                     ;*F966: 81 18          '..'
+F968: 260A                    BNE     ZF974                    ;*F968: 26 0A          '&.'
+F96A: C601                    LDB     #$01                     ;*F96A: C6 01          '..'
+F96C: 8D4E                    BSR     ZF9BA                    ;*F96C: 8D 4C          '.L'
+F96E: C6A8                    LDB     #$A8                     ;*F96E: C6 A8          '..'
+F970: 8D4A                    BSR     ZF9BA                    ;*F970: 8D 48          '.H'
+F972: 2046                    BRA     ZF9B8                    ;*F972: 20 44          ' D'
+F974: 810E            ZF974   CMPA    #$0E                     ;*F974: 81 0E          '..'
+F976: 2610                    BNE     ZF988                    ;*F976: 26 10          '&.'
+F978: C605                    LDB     #$05                     ;*F978: C6 05          '..'
+F97A: 8D40                    BSR     ZF9BA                    ;*F97A: 8D 3E          '.>'
+F97C: 8620                    LDA     #$20                     ;*F97C: 86 20          '. '
+F97E: 8D8C                    BSR     ZF90C                    ;*F97E: 8D 8C          '..'
+F980: C607                    LDB     #$07                     ;*F980: C6 07          '..'
+F982: 860E                    LDA     #$0E                     ;*F982: 86 0E          '..'
+F984: 8D36                    BSR     ZF9BA                    ;*F984: 8D 34          '.4'
+F986: 2032                    BRA     ZF9B8                    ;*F986: 20 30          ' 0'
+F988: 810D            ZF988   CMPA    #$0D                     ;*F988: 81 0D          '..'
+F98A: 272E                    BEQ     ZF9B8                    ;*F98A: 27 2C          '','
+F98C: 810A                    CMPA    #$0A                     ;*F98C: 81 0A          '..'
+F98E: 272A                    BEQ     ZF9B8                    ;*F98E: 27 28          ''('
+F990: 8161                    CMPA    #$61                     ;*F990: 81 61          '.a'
+F992: 2502                    BCS     ZF996                    ;*F992: 25 02          '%.'
+F994: 845F                    ANDA    #$5F                     ;*F994: 84 5F          '._'
+F996: 815C            ZF996   CMPA    #$5C                     ;*F996: 81 5C          '.\'
+F998: 250A                    BCS     ZF9A3                    ;*F998: 25 09          '%.'
+F99A: 8160                    CMPA    #$60                     ;*F99A: 81 60          '.`'
+F99C: 2206                    BHI     ZF9A3                    ;*F99C: 22 05          '".'
+F99E:                 ;        LEAX    MF967,PCR                ;*F99E: 30 8C C6       '0..'
+F99E: 308DFFC7                LEAX    LCT1-$5C,PCR                ;*F99E: 30 8C C6       '0..'
+F9A2: 200C                    BRA     ZF9AE                    ;*F9A1: 20 0B          ' .'
+F9A4: 8120            ZF9A3   CMPA    #$20                     ;*F9A3: 81 20          '. '
+F9A6: 250A                    BCS     ZF9B0                    ;*F9A5: 25 09          '%.'
+F9A8: 8140                    CMPA    #$40                     ;*F9A7: 81 40          '.@'
+F9AA: 2206                    BHI     ZF9B0                    ;*F9A9: 22 05          '".'
+F9AC:                 ;        LEAX    MF9A8,PCR                ;*F9AB: 30 8C FA       '0..'
+F9AC: 308DFFFA                LEAX    LCT2-$20,PCR                ;*F9AB: 30 8C FA       '0..'
+F9B0: A686            ZF9AE   LDA     A,X                      ;*F9AE: A6 86          '..'
+F9B2: 7DC800          ZF9B0   TST     MC800                    ;*F9B0: 7D C8 00       '}..'
+F9B5: 2BFB                    BMI     ZF9B0                    ;*F9B3: 2B FB          '+.'
+F9B7: B7C801                  STA     MC801                    ;*F9B5: B7 C8 01       '...'
+F9BA: 3596            ZF9B8   PULS    PC,X,D                   ;*F9B8: 35 96          '5.'
+F9BC: 7DC800          ZF9BA   TST     MC800                    ;*F9BA: 7D C8 00       '}..'
+F9BF: 2BFB                    BMI     ZF9BA                    ;*F9BD: 2B FB          '+.'
+F9C1: F7C800                  STB     MC800                    ;*F9BF: F7 C8 00       '...'
+F9C4: 39                      RTS                              ;*F9C2: 39             '9'
+F9C5:                 
+F9C5:                 LCT1    
+F9C5: 6A5C6FCA3E              fcb     $6a, $5c, $6f, $ca, $3e ;
+F9CA:                 
+F9CA:                 LCT2
+F9CA: 204022236024            fcw     $2040, $2223, $6024 ;
+F9D0: 25262728293F            fcw     $2526, $2728, $293f 
+F9D6: 2A2B2C2D3031            fcw     $2a2b, $2c2d, $3031 
+F9DC: 323334353637            fcw     $3233, $3435, $3637 
+F9E2: 38393A3B2F3C            fcw     $3839, $3a3b, $2f3c 
+F9E8: 2E3D21FFFFFF            fcw     $2e3d, $21ff, $ffff 
+F9EE: 12345678                fcw     $1234, $5678 
+F9F2:                 
+F9F2:                 ;LCT3 MOVED TO END OF PAGE 0XFC
+F9F2:                 ;       fcb     7 
+F9F2:                 ;       fcb     $30, $30, $06 
+F9F2:                 ;       fcb     $0e, $01, $07, $a8 
+F9F2:                 ;       fcb     24 
+F9F2:                 ;       fcc     " 6809 monitor v1.1 1989 " 
+F9F2:                         
+F9F2:                 *****************************************************
+F9F2:                 **      CLOCK                                       *
+F9F2:                 *****************************************************
+F9F2:                         ORG     $FA00 
+FA00:                 
+FA00: 1600AE          ZFA00   LBRA    ZFAB1                    ;*FA00: 16 00 AE       '...'
+FA03: 160000          ZFA03   LBRA    ZFA06                    ;*FA03: 16 00 00       '...'
+FA06: 3416            ZFA06   PSHS    X,D                      ;*FA06: 34 16          '4.'
+FA08: 170082                  LBSR    ZFA8D                    ;*FA08: 17 00 82       '...'
+FA0B: C604                    LDB     #$04                     ;*FA0B: C6 04          '..'
+FA0D: 170093                  LBSR    ZFAA3                    ;*FA0D: 17 00 93       '...'
+FA10: 17FEEF                  LBSR    ZF902                    ;*FA10: 17 FE EF       '...'
+FA13: 863A            ZFA13   LDA     #$3A                     ;*FA13: 86 3A          '.:'
+FA15: AD9FE7FC                JSR     [ZE7FC]                  ;*FA15: AD 9F E7 FC    '....'
+FA19: C602                    LDB     #$02                     ;*FA19: C6 02          '..'
+FA1B: 170085                  LBSR    ZFAA3                    ;*FA1B: 17 00 85       '...'
+FA1E: 17FEE1                  LBSR    ZF902                    ;*FA1E: 17 FE E1       '...'
+FA21: 863A                    LDA     #$3A                     ;*FA21: 86 3A          '.:'
+FA23: AD9FE7FC                JSR     [ZE7FC]                  ;*FA23: AD 9F E7 FC    '....'
+FA27: C600                    LDB     #$00                     ;*FA27: C6 00          '..'
+FA29: 8D78                    BSR     ZFAA3                    ;*FA29: 8D 78          '.x'
+FA2B: 17FED4                  LBSR    ZF902                    ;*FA2B: 17 FE D4       '...'
+FA2E: 17FED3                  LBSR    ZF904                    ;*FA2E: 17 FE D3       '...'
+FA31: 17FED0                  LBSR    ZF904                    ;*FA31: 17 FE D0       '...'
+FA34: C606                    LDB     #$06                     ;*FA34: C6 06          '..'
+FA36: 8D6B                    BSR     ZFAA3                    ;*FA36: 8D 6B          '.k'
+FA38: 8001                    SUBA    #$01                     ;*FA38: 80 01          '..'
+FA3A: C60A                    LDB     #$0A                     ;*FA3A: C6 0A          '..'
+FA3C: 3D                      MUL                              ;*FA3C: 3D             '='
+FA3D: 1E89                    EXG     A,B                      ;*FA3D: 1E 89          '..'
+FA3F: 308D02D8                LEAX    MFD20,PCR                ;*FA3F: 30 8D 02 DD    '0...'
+FA43: 3086                    LEAX    A,X                      ;*FA43: 30 86          '0.'
+FA45: E680                    LDB     ,X+                      ;*FA45: E6 80          '..'
+FA47: A680            ZFA47   LDA     ,X+                      ;*FA47: A6 80          '..'
+FA49: AD9FE7FC                JSR     [ZE7FC]                  ;*FA49: AD 9F E7 FC    '....'
+FA4D: 5A                      DECB                             ;*FA4D: 5A             'Z'
+FA4E: 26F7                    BNE     ZFA47                    ;*FA4E: 26 F7          '&.'
+FA50: 17FEB1                  LBSR    ZF904                    ;*FA50: 17 FE B1       '...'
+FA53: C607                    LDB     #$07                     ;*FA53: C6 07          '..'
+FA55: 8D4C                    BSR     ZFAA3                    ;*FA55: 8D 4C          '.L'
+FA57: 17FEA8                  LBSR    ZF902                    ;*FA57: 17 FE A8       '...'
+FA5A: 17FEA7                  LBSR    ZF904                    ;*FA5A: 17 FE A7       '...'
+FA5D: C608                    LDB     #$08                     ;*FA5D: C6 08          '..'
+FA5F: 8D42                    BSR     ZFAA3                    ;*FA5F: 8D 42          '.B'
+FA61: 8001                    SUBA    #$01                     ;*FA61: 80 01          '..'
+FA63: C60A                    LDB     #$0A                     ;*FA63: C6 0A          '..'
+FA65: 3D                      MUL                              ;*FA65: 3D             '='
+FA66: 1E89                    EXG     A,B                      ;*FA66: 1E 89          '..'
+FA68: 308D02F5                LEAX    MFD66,PCR                ;*FA68: 30 8D 02 FA    '0...'
+FA6C: 3086                    LEAX    A,X                      ;*FA6C: 30 86          '0.'
+FA6E: E680                    LDB     ,X+                      ;*FA6E: E6 80          '..'
+FA70: A680            ZFA70   LDA     ,X+                      ;*FA70: A6 80          '..'
+FA72: AD9FE7FC                JSR     [ZE7FC]                  ;*FA72: AD 9F E7 FC    '....'
+FA76: 5A                      DECB                             ;*FA76: 5A             'Z'
+FA77: 26F7                    BNE     ZFA70                    ;*FA77: 26 F7          '&.'
+FA79: 17FE88                  LBSR    ZF904                    ;*FA79: 17 FE 88       '...'
+FA7C: 8619                    LDA     #$19                     ;*FA7C: 86 19          '..'
+FA7E: 17FE81                  LBSR    ZF902                    ;*FA7E: 17 FE 81       '...'
+FA81: C609                    LDB     #$09                     ;*FA81: C6 09          '..'
+FA83: 8D1E                    BSR     ZFAA3                    ;*FA83: 8D 1E          '..'
+FA85: 17FE7A                  LBSR    ZF902                    ;*FA85: 17 FE 7A       '..z'
+FA88: 17FE79                  LBSR    ZF904                    ;*FA88: 17 FE 79       '..y'
+FA8B: 3596                    PULS    PC,X,D                   ;*FA8B: 35 96          '5.'
+FA8D: 3406            ZFA8D   PSHS D                             ;*FA8D: 34 06          '4.'
+FA8F: C60A                    LDB     #$0A                     ;*FA8F: C6 0A          '..'
+FA91: F7D000          ZFA91   STB     MD000                    ;*FA91: F7 D0 00       '...'
+FA94: B6D001                  LDA     MD001                    ;*FA94: B6 D0 01       '...'
+FA97: 2AF8                    BPL     ZFA91                    ;*FA97: 2A F8          '*.'
+FA99: F7D000          ZFA99   STB     MD000                    ;*FA99: F7 D0 00       '...'
+FA9C: B6D001                  LDA     MD001                    ;*FA9C: B6 D0 01       '...'
+FA9F: 2BF8                    BMI     ZFA99                    ;*FA9F: 2B F8          '+.'
+FAA1: 3586                    PULS    PC,D                     ;*FAA1: 35 86          '5.'
+FAA3: F7D000          ZFAA3   STB     MD000                    ;*FAA3: F7 D0 00       '...'
+FAA6: B6D001                  LDA     MD001                    ;*FAA6: B6 D0 01       '...'
+FAA9: 39                      RTS                              ;*FAA9: 39             '9'
+FAAA: F7D000          ZFAAA   STB     MD000                    ;*FAAA: F7 D0 00       '...'
+FAAD: B7D001                  STA     MD001                    ;*FAAD: B7 D0 01       '...'
+FAB0: 39                      RTS                              ;*FAB0: 39             '9'
+FAB1: 3416            ZFAB1   PSHS    X,D                      ;*FAB1: 34 16          '4.'
+FAB3: 8606                    LDA     #$06                     ;*FAB3: 86 06          '..'
+FAB5: C60A                    LDB     #$0A                     ;*FAB5: C6 0A          '..'
+FAB7: 8DF1                    BSR     ZFAAA                    ;*FAB7: 8D F1          '..'
+FAB9: 862B                    LDA     #$2B                     ;*FAB9: 86 2B          '.+'
+FABB: C60B                    LDB     #$0B                     ;*FABB: C6 0B          '..'
+FABD: 8DEB                    BSR     ZFAAA                    ;*FABD: 8D EB          '..'
+FABF: C60C                    LDB     #$0C                     ;*FABF: C6 0C          '..'
+FAC1: 8DE0                    BSR     ZFAA3                    ;*FAC1: 8D E0          '..'
+FAC3: C60D                    LDB     #$0D                     ;*FAC3: C6 0D          '..'
+FAC5: 8DDC                    BSR     ZFAA3                    ;*FAC5: 8D DC          '..'
+FAC7: 2B00                    BMI     ZFAC9                    ;*FAC7: 2B 00          '+.'
+FAC9: 308D0007        ZFAC9   LEAX    <MFAD3,PCR               ;*FAC9: 30 8C 07       '0..'
+**** Relative branch out of range
+FACD: BFE7F4                  STX     ZE7F4                    ;*FACC: BF E7 F4       '...'
+FAD0: 1CEF                    CLI                              ;*FACF: 1C EF          '..'
+FAD2: 3596                    PULS    PC,X,D                   ;*FAD1: 35 96          '5.'
+FAD4: C60C            MFAD3   LDB     #$0C                     ;*FAD3: C6 0C          '..'
+FAD6: 8DCB                    BSR     ZFAA3                    ;*FAD5: 8D CC          '..'
+FAD8: 3B                      RTI                              ;*FAD7: 3B             ';'
+FAD9:                 
+FAD9:                 *****************************************************
+FAD9:                 **      S-REC   LOADER                              *
+FAD9:                 *****************************************************
+FAD9:                         ORG     $FB00 
+FB00:                 
+FB00: 2002            ZFB00   BRA     ZFB04                    ;*FB00: 20 02          ' .'
+FB02: 2076            ZFB02   BRA     ZFB7A                    ;*FB02: 20 76          ' v'
+FB04: 3430            ZFB04   PSHS    Y,X                      ;*FB04: 34 30          '40'
+FB06: 10BEE7FE                LDY     ZE7FE                    ;*FB06: 10 BE E7 FE    '....'
+FB0A: 308DFCF4                LEAX    MF802,PCR                ;*FB0A: 30 8D FC F4    '0...'
+FB0E: BFE7FE                  STX     ZE7FE                    ;*FB0E: BF E7 FE       '...'
+FB11: 8D06                    BSR     ZFB19                    ;*FB11: 8D 06          '..'
+FB13: 10BFE7FE                STY     ZE7FE                    ;*FB13: 10 BF E7 FE    '....'
+FB17: 35B0                    PULS    PC,Y,X                   ;*FB17: 35 B0          '5.'
+FB19: 3436            ZFB19   PSHS    Y,X,D                    ;*FB19: 34 36          '46'
+FB1B: 8D75            ZFB1B   BSR     ZFB92                    ;*FB1B: 8D 75          '.u'
+FB1D: 8153                    CMPA    #$53                     ;*FB1D: 81 53          '.S'
+FB1F: 26FA                    BNE     ZFB1B                    ;*FB1F: 26 FA          '&.'
+FB21: 8D6F                    BSR     ZFB92                    ;*FB21: 8D 6F          '.o'
+FB23: 8131                    CMPA    #$31                     ;*FB23: 81 31          '.1'
+FB25: 2706                    BEQ     ZFB2D                    ;*FB25: 27 06          ''.'
+FB27: 8139                    CMPA    #$39                     ;*FB27: 81 39          '.9'
+FB29: 26F0                    BNE     ZFB1B                    ;*FB29: 26 F0          '&.'
+FB2B: 2030                    BRA     ZFB5D                    ;*FB2B: 20 30          ' 0'
+FB2D: 8601            ZFB2D   LDA     #$01                     ;*FB2D: 86 01          '..'
+FB2F: B7E7ED                  STA     ME7ED                    ;*FB2F: B7 E7 ED       '...'
+FB32: 8D2B                    BSR     ZFB5F                    ;*FB32: 8D 2B          '.+'
+FB34: 8003                    SUBA    #$03                     ;*FB34: 80 03          '..'
+FB36: 3402                    PSHS A                             ;*FB36: 34 02          '4.'
+FB38: 8D25                    BSR     ZFB5F                    ;*FB38: 8D 25          '.%'
+FB3A: 1F89                    TFR     A,B                      ;*FB3A: 1F 89          '..'
+FB3C: 8D21                    BSR     ZFB5F                    ;*FB3C: 8D 21          '.!'
+FB3E: 1E89                    EXG     A,B                      ;*FB3E: 1E 89          '..'
+FB40: 1F01                    TFR     D,X                      ;*FB40: 1F 01          '..'
+FB42: 3502                    PULS A                             ;*FB42: 35 02          '5.'
+FB44: 3186                    LEAY    A,X                      ;*FB44: 31 86          '1.'
+FB46: 8D17            ZFB46   BSR     ZFB5F                    ;*FB46: 8D 17          '..'
+FB48: A780                    STA     ,X+                      ;*FB48: A7 80          '..'
+FB4A: 3420                    PSHS Y                             ;*FB4A: 34 20          '4 '
+FB4C: ACE1                    CMPX    ,S++                     ;*FB4C: AC E1          '..'
+FB4E: 26F6                    BNE     ZFB46                    ;*FB4E: 26 F6          '&.'
+FB50: 8D0D                    BSR     ZFB5F                    ;*FB50: 8D 0D          '..'
+FB52: B6E7ED                  LDA     ME7ED                    ;*FB52: B6 E7 ED       '...'
+FB55: 2704                    BEQ     ZFB5B                    ;*FB55: 27 04          ''.'
+FB57: 1700A6                  LBSR    ZFC00                    ;*FB57: 17 00 A6       '...'
+FB5A: 3F                      SWI                              ;*FB5A: 3F             '?'
+FB5B: 20BE            ZFB5B   BRA     ZFB1B                    ;*FB5B: 20 BE          ' .'
+FB5D: 35B6            ZFB5D   PULS    PC,Y,X,D                 ;*FB5D: 35 B6          '5.'
+FB5F: 8D31            ZFB5F   BSR     ZFB92                    ;*FB5F: 8D 31          '.1'
+FB61: 8D17                    BSR     ZFB7A                    ;*FB61: 8D 17          '..'
+FB63: 48                      ASLA                             ;*FB63: 48             'H'
+FB64: 48                      ASLA                             ;*FB64: 48             'H'
+FB65: 48                      ASLA                             ;*FB65: 48             'H'
+FB66: 48                      ASLA                             ;*FB66: 48             'H'
+FB67: 3402                    PSHS A                             ;*FB67: 34 02          '4.'
+FB69: 8D27                    BSR     ZFB92                    ;*FB69: 8D 27          '.''
+FB6B: 8D0D                    BSR     ZFB7A                    ;*FB6B: 8D 0D          '..'
+FB6D: ABE0                    ADDA    ,S+                      ;*FB6D: AB E0          '..'
+FB6F: 3402                    PSHS A                             ;*FB6F: 34 02          '4.'
+FB71: BBE7ED                  ADDA    ME7ED                    ;*FB71: BB E7 ED       '...'
+FB74: B7E7ED                  STA     ME7ED                    ;*FB74: B7 E7 ED       '...'
+FB77: 3502                    PULS A                             ;*FB77: 35 02          '5.'
+FB79: 39                      RTS                              ;*FB79: 39             '9'
+FB7A: 8130            ZFB7A   CMPA    #$30                     ;*FB7A: 81 30          '.0'
+FB7C: 2511                    BCS     ZFB8F                    ;*FB7C: 25 11          '%.'
+FB7E: 813A                    CMPA    #$3A                     ;*FB7E: 81 3A          '.:'
+FB80: 250A                    BCS     ZFB8C                    ;*FB80: 25 0A          '%.'
+FB82: 8141                    CMPA    #$41                     ;*FB82: 81 41          '.A'
+FB84: 2509                    BCS     ZFB8F                    ;*FB84: 25 09          '%.'
+FB86: 8147                    CMPA    #$47                     ;*FB86: 81 47          '.G'
+FB88: 2405                    BCC     ZFB8F                    ;*FB88: 24 05          '$.'
+FB8A: 8007                    SUBA    #$07                     ;*FB8A: 80 07          '..'
+FB8C: 840F            ZFB8C   ANDA    #$0F                     ;*FB8C: 84 0F          '..'
+FB8E: 39                      RTS                              ;*FB8E: 39             '9'
+FB8F: 8680            ZFB8F   LDA     #$80                     ;*FB8F: 86 80          '..'
+FB91: 39                      RTS                              ;*FB91: 39             '9'
+FB92: 6E9FE7FE        ZFB92   JMP     [ZE7FE]                  ;*FB92: 6E 9F E7 FE    'n...'
+FB96:                 
+FB96:                 *****************************************************
+FB96:                 **      6522 VIA KEYBOARD                           *
+FB96:                 *****************************************************
+FB96:                         ORG     $FC00 
+FC00:                 
+FC00: 3410            ZFC00   PSHS X                             ;*FC00: 34 10          '4.'
+FC02: 308D002C                LEAX    <ZFC30,PCR               ;*FC02: 30 8C 2B       '0.+'
+**** Relative branch out of range
+FC06: BFE7FE                  STX     ZE7FE                    ;*FC05: BF E7 FE       '...'
+FC09: 308D0005                LEAX    <MFC10,PCR               ;*FC08: 30 8C 05       '0..'
+**** Relative branch out of range
+FC0D: BFE7FA                  STX     ME7FA                    ;*FC0B: BF E7 FA       '...'
+FC10: 3590                    PULS    PC,X                     ;*FC0E: 35 90          '5.'
+FC12: C60F            MFC10   LDB     #$0F                     ;*FC10: C6 0F          '..'
+FC14: 8D13                    BSR     ZFC27                    ;*FC12: 8D 13          '..'
+FC16: 2606                    BNE     ZFC1C                    ;*FC14: 26 06          '&.'
+FC18: 8D18                    BSR     ZFC30                    ;*FC16: 8D 18          '..'
+FC1A: 8120                    CMPA    #$20                     ;*FC18: 81 20          '. '
+FC1C: 2601                    BNE     ZFC1D                    ;*FC1A: 26 01          '&.'
+FC1E: 4F              ZFC1C   CLRA                             ;*FC1C: 4F             'O'
+FC1F: 39              ZFC1D   RTS                              ;*FC1D: 39             '9'
+FC20: F78000          ZFC1E   STB     M8000                    ;*FC1E: F7 80 00       '...'
+FC23: B68000                  LDA     M8000                    ;*FC21: B6 80 00       '...'
+FC26: 8410                    ANDA    #$10                     ;*FC24: 84 10          '..'
+FC28: 39                      RTS                              ;*FC26: 39             '9'
+FC29: F78000          ZFC27   STB     M8000                    ;*FC27: F7 80 00       '...'
+FC2C: F68000                  LDB     M8000                    ;*FC2A: F6 80 00       '...'
+FC2F: C410                    ANDB    #$10                     ;*FC2D: C4 10          '..'
+FC31: 39                      RTS                              ;*FC2F: 39             '9'
+FC32: 3436            ZFC30   PSHS    Y,X,D                    ;*FC30: 34 36          '46'
+FC34: 86EF                    LDA     #$EF                     ;*FC32: 86 EF          '..'
+FC36: B78002                  STA     M8002                    ;*FC34: B7 80 02       '...'
+FC39: 108E0400                LDY     #M0400                   ;*FC37: 10 8E 04 00    '....'
+FC3D: 2004                    BRA     ZFC41                    ;*FC3B: 20 04          ' .'
+FC3F: 4F              ZFC3D   CLRA                             ;*FC3D: 4F             'O'
+FC40: B7E7EC                  STA     ME7EC                    ;*FC3E: B7 E7 EC       '...'
+FC43: C60D            ZFC41   LDB     #$0D                     ;*FC41: C6 0D          '..'
+FC45: 5A              ZFC43   DECB                             ;*FC43: 5A             'Z'
+FC46: 2BF7                    BMI     ZFC3D                    ;*FC44: 2B F7          '+.'
+FC48: 8DD6                    BSR     ZFC1E                    ;*FC46: 8D D6          '..'
+FC4A: 27F9                    BEQ     ZFC43                    ;*FC48: 27 F9          ''.'
+FC4C: E7E4                    STB     ,S                       ;*FC4A: E7 E4          '..'
+FC4E: 5A              ZFC4C   DECB                             ;*FC4C: 5A             'Z'
+FC4F: 2BEE                    BMI     ZFC3D                    ;*FC4D: 2B EE          '+.'
+FC51: 8DCD                    BSR     ZFC1E                    ;*FC4F: 8D CD          '..'
+FC53: 27F9                    BEQ     ZFC4C                    ;*FC51: 27 F9          ''.'
+FC55: 1F98                    TFR     B,A                      ;*FC53: 1F 98          '..'
+FC57: 48                      ASLA                             ;*FC55: 48             'H'
+FC58: 48                      ASLA                             ;*FC56: 48             'H'
+FC59: 48                      ASLA                             ;*FC57: 48             'H'
+FC5A: 48                      ASLA                             ;*FC58: 48             'H'
+FC5B: ABE4                    ADDA    ,S                       ;*FC59: AB E4          '..'
+FC5D: A7E4                    STA     ,S                       ;*FC5B: A7 E4          '..'
+FC5F: 5A              ZFC5D   DECB                             ;*FC5D: 5A             'Z'
+FC60: 2B06                    BMI     ZFC66                    ;*FC5E: 2B 06          '+.'
+FC62: 8DBC                    BSR     ZFC1E                    ;*FC60: 8D BC          '..'
+FC64: 26D9                    BNE     ZFC3D                    ;*FC62: 26 D9          '&.'
+FC66: 27F7                    BEQ     ZFC5D                    ;*FC64: 27 F7          ''.'
+FC68: A6E4            ZFC66   LDA     ,S                       ;*FC66: A6 E4          '..'
+FC6A: 308D0031                LEAX    <MFC9C,PCR               ;*FC68: 30 8C 31       '0.1'
+**** Relative branch out of range
+FC6E: A686                    LDA     A,X                      ;*FC6B: A6 86          '..'
+FC70: A7E4                    STA     ,S                       ;*FC6D: A7 E4          '..'
+FC72: C60D                    LDB     #$0D                     ;*FC6F: C6 0D          '..'
+FC74: 8DB3                    BSR     ZFC27                    ;*FC71: 8D B4          '..'
+FC76: 2604                    BNE     ZFC79                    ;*FC73: 26 04          '&.'
+FC78: 8810                    EORA    #$10                     ;*FC75: 88 10          '..'
+FC7A: A7E4                    STA     ,S                       ;*FC77: A7 E4          '..'
+FC7C: C60E            ZFC79   LDB     #$0E                     ;*FC79: C6 0E          '..'
+FC7E: 8DA9                    BSR     ZFC27                    ;*FC7B: 8D AA          '..'
+FC80: 2604                    BNE     ZFC83                    ;*FC7D: 26 04          '&.'
+FC82: 841F                    ANDA    #$1F                     ;*FC7F: 84 1F          '..'
+FC84: A7E4                    STA     ,S                       ;*FC81: A7 E4          '..'
+FC86: 7DE7EC          ZFC83   TST     ME7EC                    ;*FC83: 7D E7 EC       '}..'
+FC89: 270D                    BEQ     ZFC95                    ;*FC86: 27 0D          ''.'
+FC8B: B1E7EC                  CMPA    ME7EC                    ;*FC88: B1 E7 EC       '...'
+FC8E: 2602                    BNE     ZFC8F                    ;*FC8B: 26 02          '&.'
+FC90: 3139                    LEAY    -$07,Y                   ;*FC8D: 31 39          '19'
+FC92: 313F            ZFC8F   DEY                              ;*FC8F: 31 3F          '1?'
+FC94: 26AD                    BNE     ZFC41                    ;*FC91: 26 AE          '&.'
+FC96: 2002                    BRA     ZFC97                    ;*FC93: 20 02          ' .'
+FC98: 86FF            ZFC95   LDA     #$FF                     ;*FC95: 86 FF          '..'
+FC9A: B7E7EC          ZFC97   STA     ME7EC                    ;*FC97: B7 E7 EC       '...'
+FC9D: 35B6                    PULS    PC,Y,X,D                 ;*FC9A: 35 B6          '5.'
+FC9F:                 
+FC9F:                 *       Keyboard translation tables
+FC9F: FFFF            MFC9C   FCB     $FF,$FF                  ;*FC9C: FF FF          '..'
+FCA1: 5351464448474B          FCC     "SQFDHGKJL"              ;*FC9E: 53 51 46 44 48 47 4B 4A 4C 'SQFDHGKJL'
+FCAA: FFFFFFFFFFFF            FCB     $FF,$FF,$FF,$FF,$FF,$FF  ;*FCA7: FF FF FF FF FF FF '......'
+FCB0: FF                      FCB     $FF                      ;*FCAD: FF             '.'
+FCB1: 585756434E422C          FCC     "XWVCNB,M./"             ;*FCAE: 58 57 56 43 4E 42 2C 4D 2E 2F 'XWVCNB,M./'
+FCBB: FFFFFFFFFFFF            FCB     $FF,$FF,$FF,$FF,$FF,$FF  ;*FCB8: FF FF FF FF FF FF '......'
+FCC1: FF                      FCB     $FF                      ;*FCBE: FF             '.'
+FCC2: 4152453C                FCC     "ARE<"                   ;*FCBF: 41 52 45 3C    'ARE<'
+FCC6: 0DFF                    FCB     $0D,$FF                  ;*FCC3: 0D FF          '..'
+FCC8: 5C                      FCC     "\"                      ;*FCC5: 5C             '\'
+FCC9: FF1BFFFFFFFF            FCB     $FF,$1B,$FF,$FF,$FF,$FF  ;*FCC6: FF 1B FF FF FF FF '......'
+FCCF: FFFFFFFF                FCB     $FF,$FF,$FF,$FF          ;*FCCC: FF FF FF FF    '....'
+FCD3: 595A55544F4950          FCC     "YZUTOIP"                ;*FCD0: 59 5A 55 54 4F 49 50 'YZUTOIP'
+FCDA: 0AFFFFFFFFFF            FCB     $0A,$FF,$FF,$FF,$FF,$FF  ;*FCD7: 0A FF FF FF FF FF '......'
+FCE0: FFFFFFFF                FCB     $FF,$FF,$FF,$FF          ;*FCDD: FF FF FF FF    '....'
+FCE4: 343231                  FCC     "421"                    ;*FCE1: 34 32 31       '421'
+FCE7: FF                      FCB     $FF                      ;*FCE4: FF             '.'
+FCE8: 333B                    FCC     "3;"                     ;*FCE5: 33 3B          '3;'
+FCEA: FFFFFFFFFFFF            FCB     $FF,$FF,$FF,$FF,$FF,$FF  ;*FCE7: FF FF FF FF FF FF '......'
+FCF0: FFFFFFFFFF              FCB     $FF,$FF,$FF,$FF,$FF      ;*FCED: FF FF FF FF FF '.....'
+FCF5: 363538373930            FCC     "658790"                 ;*FCF2: 36 35 38 37 39 30 '658790'
+FCFB: FFFFFFFFFFFF            FCB     $FF,$FF,$FF,$FF,$FF,$FF  ;*FCF8: FF FF FF FF FF FF '......'
+FD01: FFFFFFFFFFFF            FCB     $FF,$FF,$FF,$FF,$FF,$FF  ;*FCFE: FF FF FF FF FF FF '......'
+FD07: 5E20                    FCC     "^ "                     ;*FD04: 5E 20          '^ '
+FD09: FF                      FCB     $FF                      ;*FD06: FF             '.'
+FD0A: 40                      FCC     "@"                      ;*FD07: 40             '@'
+FD0B: FFFFFFFFFFFF            FCB     $FF,$FF,$FF,$FF,$FF,$FF  ;*FD08: FF FF FF FF FF FF '......'
+FD11: FFFFFFFFFFFF            FCB     $FF,$FF,$FF,$FF,$FF,$FF  ;*FD0E: FF FF FF FF FF FF '......'
+FD17: FF0E                    FCB     $FF,$0E                  ;*FD14: FF 0E          '..'
+FD19: 3A2D                    FCC     ":-"                     ;*FD16: 3A 2D          ':-'
+FD1B:                 
+FD1B:                 *       Days
+FD1B: 06              MFD20   FCB     $06                      ;*FD20: 06             '.'
+FD1C: 53756E64617920          FCC     "Sunday   "              ;*FD21: 53 75 6E 64 61 79 20 20 20 'Sunday   '
+FD25: 06                      FCB     $06                      ;*FD2A: 06             '.'
+FD26: 4D6F6E64617920          FCC     "Monday   "              ;*FD2B: 4D 6F 6E 64 61 79 20 20 20 'Monday   '
+FD2F: 07                      FCB     $07                      ;*FD34: 07             '.'
+FD30: 54756573646179          FCC     "Tuesday  "              ;*FD35: 54 75 65 73 64 61 79 20 20 'Tuesday  '
+FD39: 09                      FCB     $09                      ;*FD3E: 09             '.'
+FD3A: 5765646E657364          FCC     "Wednesday"              ;*FD3F: 57 65 64 6E 65 73 64 61 79 'Wednesday'
+FD43: 08                      FCB     $08                      ;*FD48: 08             '.'
+FD44: 54687572736461          FCC     "Thursday "              ;*FD49: 54 68 75 72 73 64 61 79 20 'Thursday '
+FD4D: 06                      FCB     $06                      ;*FD52: 06             '.'
+FD4E: 46726964617920          FCC     "Friday   "              ;*FD53: 46 72 69 64 61 79 20 20 20 'Friday   '
+FD57: 08                      FCB     $08                      ;*FD5C: 08             '.'
+FD58: 53617475726461          FCC     "Saturday "              ;*FD5D: 53 61 74 75 72 64 61 79 20 'Saturday '
+FD61:                 
+FD61:                 *       Months
+FD61: 07              MFD66   FCB     $07                      ;*FD66: 07             '.'
+FD62: 4A616E75617279          FCC     "January  "              ;*FD67: 4A 61 6E 75 61 72 79 20 20 'January  '
+FD6B: 08                      FCB     $08                      ;*FD70: 08             '.'
+FD6C: 46656272756172          FCC     "February "              ;*FD71: 46 65 62 72 75 61 72 79 20 'February '
+FD75: 05                      FCB     $05                      ;*FD7A: 05             '.'
+FD76: 4D617263682020          FCC     "March    "              ;*FD7B: 4D 61 72 63 68 20 20 20 20 'March    '
+FD7F: 05                      FCB     $05                      ;*FD84: 05             '.'
+FD80: 417072696C2020          FCC     "April    "              ;*FD85: 41 70 72 69 6C 20 20 20 20 'April    '
+FD89: 03                      FCB     $03                      ;*FD8E: 03             '.'
+FD8A: 4D617920202020          FCC     "May      "              ;*FD8F: 4D 61 79 20 20 20 20 20 20 'May      '
+FD93: 04                      FCB     $04                      ;*FD98: 04             '.'
+FD94: 4A756E65202020          FCC     "June     "              ;*FD99: 4A 75 6E 65 20 20 20 20 20 'June     '
+FD9D: 04                      FCB     $04                      ;*FDA2: 04             '.'
+FD9E: 4A756C79202020          FCC     "July     "              ;*FDA3: 4A 75 6C 79 20 20 20 20 20 'July     '
+FDA7: 06                      FCB     $06                      ;*FDAC: 06             '.'
+FDA8: 41756775737420          FCC     "August   "              ;*FDAD: 41 75 67 75 73 74 20 20 20 'August   '
+FDB1: 09                      FCB     $09                      ;*FDB6: 09             '.'
+FDB2: 53657074656D62          FCC     "September"              ;*FDB7: 53 65 70 74 65 6D 62 65 72 'September'
+FDBB: 07                      FCB     $07                      ;*FDC0: 07             '.'
+FDBC: 4F63746F626572          FCC     "October  "              ;*FDC1: 4F 63 74 6F 62 65 72 20 20 'October  '
+FDC5: 08                      FCB     $08                      ;*FDCA: 08             '.'
+FDC6: 4E6F76656D6265          FCC     "November "              ;*FDCB: 4E 6F 76 65 6D 62 65 72 20 'November '
+FDCF: 08                      FCB     $08                      ;*FDD4: 08             '.'
+FDD0: 446563656D6265          FCC     "December "              ;*FDD5: 44 65 63 65 6D 62 65 72 20 'December '
+FDD9:                 
+FDD9:                 ; extra lcd data
+FDD9:                 LCT3
+FDD9: 07                      fcb     7 
+FDDA: 303006                  fcb     $30, $30, $06 
+FDDD: 0E0107A8                fcb     $0e, $01, $07, $a8 
+FDE1:                 
+FDE1: 18              ZFDE6   FCB     24                      ;*FDE6: 18             '.'
+FDE2: 2036383039              fcc     " 6809"  
+FDE7: 204D4F4E49544F          fcc     " MONITOR"  
+FDEF: 2056312E31              FCC     " V1.1" 
+FDF4: 203139383920            FCC     " 1989 " 
+FDFA:                 
+FDFA:                 
+FDFA:                 *****************************************************
+FDFA:                 *       memory modify                               *
+FDFA:                 *****************************************************
+FDFA:                         ORG     $FE00 
+FE00:                 
+FE00: 160006          ZFE00   LBRA    ZFE09                    ;*FE00: 16 00 06       '...'
+FE03: 16007E          ZFE03   LBRA    ZFE90                    ;*FE03: 16 00 8A       '...'
+FE06: 160071                  LBRA    ZFE7E                    ;*FE06: 16 00 75       '..u'
+FE09: 862E            ZFE09   LDA     #$2E                     ;*FE09: 86 2E          '..'
+FE0B: 3402                    PSHS A                             ;*FE0B: 34 02          '4.'
+FE0D: 860D            ZFE0D   LDA     #$0D                     ;*FE0D: 86 0D          '..'
+FE0F: AD9FE7FC                JSR     [ZE7FC]                  ;*FE0F: AD 9F E7 FC    '....'
+FE13: 860A                    LDA     #$0A                     ;*FE13: 86 0A          '..'
+FE15: AD9FE7FC                JSR     [ZE7FC]                  ;*FE15: AD 9F E7 FC    '....'
+FE19: 17FAE8                  LBSR    ZF904                    ;*FE19: 17 FA E8       '...'
+FE1C: 17FAE1                  LBSR    ZF900                    ;*FE1C: 17 FA E1       '...'
+FE1F: 17FAE2                  LBSR    ZF904                    ;*FE1F: 17 FA E2       '...'
+FE22: A684                    LDA     ,X                       ;*FE22: A6 84          '..'
+FE24: 17FADB                  LBSR    ZF902                    ;*FE24: 17 FA DB       '...'
+FE27: 17FADA                  LBSR    ZF904                    ;*FE27: 17 FA DA       '...'
+FE2A: A684                    LDA     ,X                       ;*FE2A: A6 84          '..'
+FE2C: AD9FE7FC                JSR     [ZE7FC]                  ;*FE2C: AD 9F E7 FC    '....'
+FE30: AD9FE7FE                JSR     [ZE7FE]                  ;*FE30: AD 9F E7 FE    '....'
+FE34: 8158                    CMPA    #$58                     ;*FE34: 81 58          '.X'
+FE36: 2727                    BEQ     ZFE5F                    ;*FE36: 27 27          ''''
+FE38: 8147                    CMPA    #$47                     ;*FE38: 81 47          '.G'
+FE3A: 273C                    BEQ     ZFE7C                    ;*FE3A: 27 40          ''@'
+FE3C: 812E                    CMPA    #$2E                     ;*FE3C: 81 2E          '..'
+FE3E: 2602                    BNE     ZFE42                    ;*FE3E: 26 02          '&.'
+FE40: A7E4                    STA     ,S                       ;*FE40: A7 E4          '..'
+FE42: 812F            ZFE42   CMPA    #$2F                     ;*FE42: 81 2F          './'
+FE44: 2602                    BNE     ZFE48                    ;*FE44: 26 02          '&.'
+FE46: A7E4                    STA     ,S                       ;*FE46: A7 E4          '..'
+FE48: 810D            ZFE48   CMPA    #$0D                     ;*FE48: 81 0D          '..'
+FE4A: 2716                    BEQ     ZFE62                    ;*FE4A: 27 16          ''.'
+FE4C: 810A                    CMPA    #$0A                     ;*FE4C: 81 0A          '..'
+FE4E: 2716                    BEQ     ZFE66                    ;*FE4E: 27 16          ''.'
+FE50: 17FCAF                  LBSR    ZFB02                    ;*FE50: 17 FC AF       '...'
+FE53: 2BB8                    BMI     ZFE0D                    ;*FE53: 2B B8          '+.'
+FE55: E6E4                    LDB     ,S                       ;*FE55: E6 E4          '..'
+FE57: C12F                    CMPB    #$2F                     ;*FE57: C1 2F          './'
+FE59: 270F                    BEQ     ZFE6A                    ;*FE59: 27 0F          ''.'
+FE5B: C12E                    CMPB    #$2E                     ;*FE5B: C1 2E          '..'
+FE5D: 2715                    BEQ     ZFE78                    ;*FE5D: 27 19          ''.'
+FE5F: 3504            ZFE5F   PULS B                             ;*FE5F: 35 04          '5.'
+FE61: 39                      RTS                              ;*FE61: 39             '9'
+FE62: 3001            ZFE62   INX                              ;*FE62: 30 01          '0.'
+FE64: 20A7                    BRA     ZFE0D                    ;*FE64: 20 A7          ' .'
+FE66: 301F            ZFE66   DEX                              ;*FE66: 30 1F          '0.'
+FE68: 20A3                    BRA     ZFE0D                    ;*FE68: 20 A3          ' .'
+FE6A: E684            ZFE6A   LDB     ,X                       ;*FE6A: E6 84          '..'
+FE6C: 58                      ASLB                             ;*FE6C: 58             'X'
+FE6D: 58                      ASLB                             ;*FE6D: 58             'X'
+FE6E: 58                      ASLB                             ;*FE6E: 58             'X'
+FE6F: 58                      ASLB                             ;*FE6F: 58             'X'
+FE70:                         ABA                              ;*FE70: 34 04 AB E0    '4...'
+**** Illegal mnemonic
+FE70: A784                    STA     ,X                       ;*FE74: A7 84          '..'
+FE72: 2099                    BRA     ZFE0D                    ;*FE76: 20 95          ' .'
+FE74: 8D04            ZFE78   BSR     ZFE7E                    ;*FE78: 8D 04          '..'
+FE76: 2095                    BRA     ZFE0D                    ;*FE7A: 20 91          ' .'
+FE78: 6E84            ZFE7C   JMP     ,X                       ;*FE7C: 6E 84          'n.'
+FE7A: 3402            ZFE7E   PSHS A                             ;*FE7E: 34 02          '4.'
+FE7C: 1F10                    TFR     X,D                      ;*FE80: 1F 10          '..'
+FE7E:                         ASLD                             ;*FE82: 58 49          'XI'
+**** Illegal mnemonic
+FE7E:                         ASLD                             ;*FE84: 58 49          'XI'
+**** Illegal mnemonic
+FE7E:                         ASLD                             ;*FE86: 58 49          'XI'
+**** Illegal mnemonic
+FE7E:                         ASLD                             ;*FE88: 58 49          'XI'
+**** Illegal mnemonic
+FE7E: 1F01                    TFR     D,X                      ;*FE8A: 1F 01          '..'
+FE80: 3504                    PULS B                             ;*FE8C: 35 04          '5.'
+FE82: 3A                      ABX                              ;*FE8E: 3A             ':'
+FE83: 39              ZFE8F   RTS                              ;*FE8F: 39             '9'
+FE84: 17FA7F          ZFE90   LBSR    ZF906                    ;*FE90: 17 FA 73       '..s'
+FE87: 17FA7A                  LBSR    ZF904                    ;*FE93: 17 FA 6E       '..n'
+FE8A: 17FA73                  LBSR    ZF900                    ;*FE96: 17 FA 67       '..g'
+FE8D: AD9FE7FE        ZFE99   JSR     [ZE7FE]                  ;*FE99: AD 9F E7 FE    '....'
+FE91: 8158                    CMPA    #$58                     ;*FE9D: 81 58          '.X'
+FE93: 27EE                    BEQ     ZFE8F                    ;*FE9F: 27 EE          ''.'
+FE95: 810D                    CMPA    #$0D                     ;*FEA1: 81 0D          '..'
+FE97: 2709                    BEQ     ZFEAE                    ;*FEA3: 27 09          ''.'
+FE99: 17FC66                  LBSR    ZFB02                    ;*FEA5: 17 FC 5A       '..Z'
+FE9C: 2BEF                    BMI     ZFE99                    ;*FEA8: 2B EF          '+.'
+FE9E: 8DDA                    BSR     ZFE7E                    ;*FEAA: 8D D2          '..'
+FEA0: 20E2                    BRA     ZFE90                    ;*FEAC: 20 E2          ' .'
+FEA2: 109EF8          ZFEAE   LDY     M00F8                    ;*FEAE: 10 9E F8       '...'
+FEA5: AF2A                    STX     $0A,Y                    ;*FEB1: AF 2A          '.*'
+FEA7: 8680                    LDA     #$80                     ;*FEB3: 86 80          '..'
+FEA9: AAA4                    ORA     ,Y                       ;*FEB5: AA A4          '..'
+FEAB: A7A4                    STA     ,Y                       ;*FEB7: A7 A4          '..'
+FEAD: 10DEF8                  LDS     M00F8                    ;*FEB9: 10 DE F8       '...'
+FEB0: 3B                      RTI                              ;*FEBC: 3B             ';'
+FEB1:                 
+FEB1:                 *****************************************************
+FEB1:                 *       Reset monitor                               *
+FEB1:                 *****************************************************
+FEB1:                         ORG     $FF00 
+FF00:                 
+FF00: 10CEE7B0        rRST    LDS     #ME7B0                   ;*FF00: 10 CE E7 B0    '....'
+FF04: 10FFE7F8                STS     ME7F8                    ;*FF04: 10 FF E7 F8    '....'
+FF08: 308D0016                LEAX    <MFF20,PCR ; nmi              ;*FF08: 30 8C 15       '0..'
+**** Relative branch out of range
+FF0C: BFE7F2                  STX     ZE7F2                    ;*FF0B: BF E7 F2       '...'
+FF0F: 308D0070                LEAX    <MFF81,PCR ; swi              ;*FF0E: 30 8C 70       '0.p'
+**** Relative branch out of range
+FF13: BFE7F6                  STX     ZE7F6                    ;*FF11: BF E7 F6       '...'
+FF16: 17F9EF                  LBSR    ZF908      ; lc init              ;*FF14: 17 F9 F1       '...'
+FF19: 17F9EE                  LBSR    ZF90A      ; lc svec              ;*FF17: 17 F9 F0       '...'
+FF1C: 17FCE1                  LBSR    ZFC00      ; kb svec              ;*FF1A: 17 FC E3       '...'
+FF1F: 17F8DE                  LBSR    ZF800      ; acia init              ;*FF1D: 17 F8 E0       '...'
+FF22: 10FFE7F8        MFF20   STS     ME7F8 ; nmi                   ;*FF20: 10 FF E7 F8    '....'
+FF26: 10CEE7B0                LDS     #ME7B0                   ;*FF24: 10 CE E7 B0    '....'
+FF2A: 86E7                    LDA     #$E7                     ;*FF28: 86 E7          '..'
+FF2C: 1F8B                    TFR     A,DP                     ;*FF2A: 1F 8B          '..'
+FF2E: AD9FE7FE        ZFF2C   JSR     [ZE7FE] ; recall                 ;*FF2C: AD 9F E7 FE    '....'
+FF32: 9EF8                    LDX     M00F8                    ;*FF30: 9E F8          '..'
+FF34: 300A                    LEAX    $0A,X                    ;*FF32: 30 0A          '0.'
+FF36: 814D                    CMPA    #$4D ; M                    ;*FF34: 81 4D          '.M'
+FF38: 10260005                LBNE    ZFF3F                    ;*FF36: 10 26 00 05    '.&..'
+FF3C: 17FEC1                  LBSR    ZFE00                    ;*FF3A: 17 FE C3       '...'
+FF3F: 20ED                    BRA     ZFF2C                    ;*FF3D: 20 ED          ' .'
+FF41: 8147            ZFF3F   CMPA    #$47  ; G                   ;*FF3F: 81 47          '.G'
+FF43: 2605                    BNE     ZFF48                    ;*FF41: 26 05          '&.'
+FF45: 17FEBB                  LBSR    ZFE03                    ;*FF43: 17 FE BD       '...'
+FF48: 20E4                    BRA     ZFF2C                    ;*FF46: 20 E4          ' .'
+FF4A: 8152            ZFF48   CMPA    #$52  ; R                   ;*FF48: 81 52          '.R'
+FF4C: 1027003E                LBEQ    ZFF8C                    ;*FF4A: 10 27 00 3E    '.'.>'
+FF50: 814E                    CMPA    #$4E  ; N                  ;*FF4E: 81 4E          '.N'
+FF52: 10270029                LBEQ    ZFF7D                    ;*FF50: 10 27 00 29    '.'.)'
+FF56: 814C                    CMPA    #$4C  ; L                   ;*FF54: 81 4C          '.L'
+FF58: 1027FBA4                LBEQ    ZFB00                    ;*FF56: 10 27 FB A6    '.'..'
+FF5C: 8143                    CMPA    #$43  ; C                   ;*FF5A: 81 43          '.C'
+FF5E: 102701E0                LBEQ    Z0142                    ;*FF5C: 10 27 01 E2    '.'..'
+FF62: 8157                    CMPA    #$57  ; W                   ;*FF60: 81 57          '.W'
+FF64: 1027022C                LBEQ    Z0194                    ;*FF62: 10 27 02 2E    '.'..'
+FF68: 8154                    CMPA    #$54  ; T                   ;*FF66: 81 54          '.T'
+FF6A: 2606                    BNE     ZFF70                    ;*FF68: 26 06          '&.'
+FF6C: 17FA91                  LBSR    ZFA00  ; clk init                  ;*FF6A: 17 FA 93       '...'
+FF6F: 17FA91                  LBSR    ZFA03  ; clk time                  ;*FF6D: 17 FA 93       '...'
+FF72: 8142            ZFF70   CMPA    #$42  ; B                   ;*FF70: 81 42          '.B'
+FF74: 12                      NOP                              ;*FF72: 12             '.'
+FF75: 8155                    CMPA    #$55  ; U                   ;*FF73: 81 55          '.U'
+FF77: 26B5                    BNE    ZFF2C                    ;*FF75: 10 26 FF B3    '.&..'
+FF79: 12                      nop
+**** Illegal addressing mode
+FF7A: 12                      nop
+**** Illegal addressing mode
+FF7B: 6E9FE7E5                JMP     [ZE7E5]                  ;*FF79: 6E 9F E7 E5    'n...'
+FF7F: 10DEF8          ZFF7D   LDS     M00F8  ; continue                  ;*FF7D: 10 DE F8       '...'
+FF82: 3B                      RTI                              ;*FF80: 3B             ';'
+FF83: 86E7            MFF81   LDA     #$E7   ; swi                  ;*FF81: 86 E7          '..'
+FF85: 1F8B                    TFR     A,DP                     ;*FF83: 1F 8B          '..'
+FF87: 10DFF8                  STS     M00F8                    ;*FF85: 10 DF F8       '...'
+FF8A: 10CEE7D0                LDS     #ME7D0                   ;*FF88: 10 CE E7 D0    '....'
+FF8E: 9EF8            ZFF8C   LDX     M00F8  ; register                  ;*FF8C: 9E F8          '..'
+FF90: 5F                      CLRB                             ;*FF8E: 5F             '_'
+FF91: 17F970          ZFF8F   LBSR    ZF904                    ;*FF8F: 17 F9 72       '..r'
+FF94: C108                    CMPB    #$08                     ;*FF92: C1 08          '..'
+FF96: 2603                    BNE     ZFF99                    ;*FF94: 26 03          '&.'
+FF98: 8EE7F8                  LDX     #ME7F8                   ;*FF96: 8E E7 F8       '...'
+FF9B: C103            ZFF99   CMPB    #$03                     ;*FF99: C1 03          '..'
+FF9D: 2305                    BLS     ZFFA2                    ;*FF9B: 23 05          '#.'
+FF9F: A680                    LDA     ,X+                      ;*FF9D: A6 80          '..'
+FFA1: 17F95E                  LBSR    ZF902                    ;*FF9F: 17 F9 60       '..`'
+FFA4: A680            ZFFA2   LDA     ,X+                      ;*FFA2: A6 80          '..'
+FFA6: 17F959                  LBSR    ZF902                    ;*FFA4: 17 F9 5B       '..['
+FFA9: 5C                      INCB                             ;*FFA7: 5C             '\'
+FFAA: C109                    CMPB    #$09                     ;*FFA8: C1 09          '..'
+FFAC: 26E3                    BNE     ZFF8F                    ;*FFAA: 26 E3          '&.'
+FFAE: 16FF7D                  LBRA    ZFF2C                    ;*FFAC: 16 FF 7D       '..}'
+FFB1:                 
+FFB1:                 *       vectors redirected through ram
+FFB1:                         ORG     $FFD0 
+FFD0: 6E9FE7E5        rSWI3   JMP     [ZE7E5]                  ;*FFD0: 6E 9F E7 E5    'n...'
+FFD4: 6E9FE7E7        rSWI2   JMP     [ZE7E7]                  ;*FFD4: 6E 9F E7 E7    'n...'
+FFD8: 6E9FE7E9        rFIRQ   JMP     [ZE7E9]                  ;*FFD8: 6E 9F E7 E9    'n...'
+FFDC: 6E9FE7F4        rIRQ    JMP     [ZE7F4]                  ;*FFDC: 6E 9F E7 F4    'n...'
+FFE0: 6E9FE7F6        rSWI    JMP     [ZE7F6]                  ;*FFE0: 6E 9F E7 F6    'n...'
+FFE4: 6E9FE7F2        rNMI    JMP     [ZE7F2]                  ;*FFE4: 6E 9F E7 F2    'n...'
+FFE8:                 
+FFE8:                 *       reset and interrupt vectors
+FFE8:                         ORG     $FFF2 
+FFF2: FFD0                    FCW     rSWI3   $FFD0   ;rswi3 
+FFF4: FFD4                    FCW     rSWI2   $FFD4   ;rswi2
+FFF6: FFD8                    FCW     rFIRQ   $FFD8   ;rfirq
+FFF8: FFDC                    FCW     rIRQ    $FFDC   ;rirq
+FFFA: FFE0                    FCW     rSWI    $FFE0   ;rswi
+FFFC: FFE4                    FCW     rNMI    $FFE4   ;rnmi
+FFFE: FF00                    FCW     rRST    $FF00   ;reset
+0000:                 
+0000:                 
+0000:                         END 
+17 Pass 2 errors.
+
+SYMBOL TABLE
+      LCT1 02 f9c5      LCT2 02 f9ca      LCT3 02 fdd9     M00F8 00 00f8
+     M0400 00 0400     M8000 00 8000     M8002 00 8002     MC400 00 c400
+     MC800 00 c800     MC801 00 c801     MD000 00 d000     MD001 00 d001
+     ME100 00 e100     ME200 00 e200     ME201 00 e201     ME7B0 00 e7b0
+     ME7D0 00 e7d0     ME7EC 00 e7ec     ME7ED 00 e7ed     ME7F8 00 e7f8
+     ME7FA 00 e7fa     MF802 02 f802     MFAD3 02 fad4     MFC10 02 fc12
+     MFC9C 02 fc9f     MFD20 02 fd1b     MFD66 02 fd61     MFF20 02 ff22
+     MFF81 02 ff83     RFIRQ 02 ffd8      RIRQ 02 ffdc      RNMI 02 ffe4
+      RRST 02 ff00      RSWI 02 ffe0     RSWI2 02 ffd4     RSWI3 02 ffd0
+     Z0142 00 0142     Z0194 00 0194     ZE7E5 00 e7e5     ZE7E7 00 e7e7
+     ZE7E9 00 e7e9     ZE7F2 00 e7f2     ZE7F4 00 e7f4     ZE7F6 00 e7f6
+     ZE7FC 00 e7fc     ZE7FE 00 e7fe     ZF800 02 f800     ZF808 02 f808
+     ZF82D 02 f82f     ZF83A 02 f83d     ZF83C 02 f83f     ZF841 02 f844
+     ZF84B 02 f84e     ZF850 02 f853     ZF85A 02 f85d     ZF86B 02 f86e
+     ZF877 02 f87a     ZF878 02 f87b     ZF893 02 f896     ZF897 02 f89a
+     ZF900 02 f900     ZF902 02 f902     ZF904 02 f904     ZF906 02 f906
+     ZF908 02 f908     ZF90A 02 f90a     ZF90C 02 f90c     ZF90E 02 f90e
+     ZF91A 02 f91a     ZF924 02 f924     ZF92C 02 f92c     ZF930 02 f930
+     ZF938 02 f938     ZF93A 02 f93a     ZF93E 02 f93e     ZF946 02 f946
+     ZF94F 02 f94f     ZF958 02 f958     ZF962 02 f962     ZF974 02 f974
+     ZF988 02 f988     ZF996 02 f996     ZF9A3 02 f9a4     ZF9AE 02 f9b0
+     ZF9B0 02 f9b2     ZF9B8 02 f9ba     ZF9BA 02 f9bc     ZFA00 02 fa00
+     ZFA03 02 fa03     ZFA06 02 fa06     ZFA13 02 fa13     ZFA47 02 fa47
+     ZFA70 02 fa70     ZFA8D 02 fa8d     ZFA91 02 fa91     ZFA99 02 fa99
+     ZFAA3 02 faa3     ZFAAA 02 faaa     ZFAB1 02 fab1     ZFAC9 02 fac9
+     ZFB00 02 fb00     ZFB02 02 fb02     ZFB04 02 fb04     ZFB19 02 fb19
+     ZFB1B 02 fb1b     ZFB2D 02 fb2d     ZFB46 02 fb46     ZFB5B 02 fb5b
+     ZFB5D 02 fb5d     ZFB5F 02 fb5f     ZFB7A 02 fb7a     ZFB8C 02 fb8c
+     ZFB8F 02 fb8f     ZFB92 02 fb92     ZFC00 02 fc00     ZFC1C 02 fc1e
+     ZFC1D 02 fc1f     ZFC1E 02 fc20     ZFC27 02 fc29     ZFC30 02 fc32
+     ZFC3D 02 fc3f     ZFC41 02 fc43     ZFC43 02 fc45     ZFC4C 02 fc4e
+     ZFC5D 02 fc5f     ZFC66 02 fc68     ZFC79 02 fc7c     ZFC83 02 fc86
+     ZFC8F 02 fc92     ZFC95 02 fc98     ZFC97 02 fc9a     ZFDE6 02 fde1
+     ZFE00 02 fe00     ZFE03 02 fe03     ZFE09 02 fe09     ZFE0D 02 fe0d
+     ZFE42 02 fe42     ZFE48 02 fe48     ZFE5F 02 fe5f     ZFE62 02 fe62
+     ZFE66 02 fe66     ZFE6A 02 fe6a     ZFE78 02 fe74     ZFE7C 02 fe78
+     ZFE7E 02 fe7a     ZFE8F 02 fe83     ZFE90 02 fe84     ZFE99 02 fe8d
+     ZFEAE 02 fea2     ZFF2C 02 ff2e     ZFF3F 02 ff41     ZFF48 02 ff4a
+     ZFF70 02 ff72     ZFF7D 02 ff7f     ZFF8C 02 ff8e     ZFF8F 02 ff91
+     ZFF99 02 ff9b     ZFFA2 02 ffa4
