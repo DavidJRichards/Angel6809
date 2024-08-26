@@ -80,11 +80,36 @@ putty -load mame-rs232
 
 ## Screenshot
 
-Shows serial console overlaid on mame LCD mimic
+Shows serial console overlaid on mame 2x40 character LCD mimic
 
 ![Screenshot](./photos/Screenshot1.png)
 
 
+## Building from source
 
+Before attempting to build the project maim.lst needs the target definitions added, see patch below for details
 
+[mame.lst patch](./mame/src/mame.lst.patch)
 
+I use a simlink to the source code to the project source to simplify project management, link the source file djrm6809.cpp to the same file in mame/src/homebrew
+
+The from the maim directory a make command will build everything including the djrm6809 project
+
+```
+make -j5
+```
+The -j5 option to make enables the use of 4 cpu cores for the build and considerably quickens the process.
+
+Alternativley a subset with only the djrm6809 project can be built with the following invocation:
+
+```
+make SUBTARGET=djrm6809 SOURCES=src/mame/homebrew/djrm6809.cpp TOOLS=1 REGENIE=1 -j5
+
+```
+Before the project can be run the roms need to be placed in the correct locations, the path in the repository mimics the required path in mame, they can be linked or copied to mame/roms as required. each file represents a 2kB 2716 eprom in the original system.
+
+* note: the subset build does not accept the -rs232 command, I dont know why, I'm using the full mame version for my testing.
+
+The whole project is my first attempt at a MAME simulation, this is very much a work in progress as I learn how to do it.
+
+D

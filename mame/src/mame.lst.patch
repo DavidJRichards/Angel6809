@@ -1,0 +1,26 @@
+--- /opt/mame/src/mame/mame_.lst
++++ /opt/mame/src/mame/mame.lst
+@@ -19684,6 +19684,22 @@
+ 
+ @source:homebrew/lft_phasor.cpp
+ phasor                          // Phasor, by [lft] (2010)
++
++@source:homebrew/mecb6502.cpp
++mecb6502                        // DigicoolThings 6502 SMON Machine
++
++@source:homebrew/mecb6502b.cpp
++mecb6502b                       // DigicoolThings 6502 BASIC Machine
++
++@source:homebrew/mecb6809.cpp
++mecb6809                        // DigicoolThings 6809 Combo Machine
++
++@source:homebrew/djrm6809.cpp
++djrm6809                        // 
++
++@source:homebrew/mecbz80.cpp
++mecbz80                         // DigicoolThings Z80 Machine
++
+ @source:homebrew/minib.cpp
+ minib                           //
+ 
+
