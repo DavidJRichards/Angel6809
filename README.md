@@ -1,5 +1,9 @@
 # Angel6809
-Historical 6809 development board, resurrected in MAME
+
+Historical 6809 development board, resurrected in MAME.
+
+Derived from Digicoolthings mecb MAIM configuration with changes gleaned from other sources
+
 
 ## Features
 
@@ -61,8 +65,48 @@ ME7F8   EQU     $D7F8 ; STK SAV
 ME7FA   EQU     $D7FA ; QT VEC
 ZE7FC   EQU     $D7FC ; OUT VEC
 ZE7FE   EQU     $D7FE ; IN VEC
+```
+## Monitor
+
+Monitor commands are a single character followed by optional numbers and ended by return.
+
+<br>
+
+|Letter  |Command|
+|--------|-------|
+|M       |Modify              |
+|R       |Register display    |
+|N       |Continue after break|
+|S       |save S records      |
+|L       |load S records      |
+|I       |Forth warm start    |
+|O       |Forth cold start    |
+|G       |Go                  |
+|.       |Modify address      |
+|/       |Modify data         |
+|Return  |next address        |
+|Linefeed|this address ?      |
+|T       |Show Date & Time    |
+
+
+Monitor register display has no labels enabling it to fit on a single line of the 40 character display and still leave room to see a command being typed. The display has the following format:
 
 ```
+Cc A  B  D  X  Y  U  Pc S
+```
+
+|Code |Meaning|
+|-----|-------|
+|Cc|Condition codes|
+|A |register|
+|B |register|
+|D |register (A and B)|
+|X |register|
+|Y |register|
+|U ||
+|Pc|program counter|
+|S |stack pointer|
+
 
 ## Notes
 
@@ -77,6 +121,11 @@ ZE7FE   EQU     $D7FE ; IN VEC
 putty -load mame-rs232
 
 (raw protocol on localhost, port 1234)
+
+* The only working keyboard is by using rs232 nullmodem driver to a TCP port. The 6522 keyboard driver is unimplemented. The Console keyboard and screen is broken somehow. Possible cause is due to having two consoles in the configuration (LCD and rs232)
+
+* All clocks used need to be reviewed and corrected, known to be wrong.
+
 
 ## Screenshot
 
