@@ -32,6 +32,7 @@ Derived from Digicoolthings mecb MAIM configuration with changes gleaned from ot
 [2x40 LCD](./photos/LCD_2x40.png)
 
 ## Constants
+
 ```
 CPU Crystal frequency 4.0 Mhz = 1MHz clock
 ACIA Clock frequency 1.8432 Mhz
@@ -39,6 +40,7 @@ RTC Clock frequency 4.194304 MHz
 M0400   EQU     $0400 ; keyboard delay
 MDIPG   EQU     $E7   ; Monitor direct page
 RS232 baudrate 9600 bps
+```
 
 ## System ram locations
 ```
@@ -62,8 +64,6 @@ ME7F8   EQU     $E7F8 ; STK SAV
 ME7FA   EQU     $E7FA ; QT VEC
 ZE7FC   EQU     $E7FC ; OUT VEC
 ZE7FE   EQU     $E7FE ; IN VEC
-```
-
 ```
 
 Original source code development was limited by the assembler used to a maximum of 256 byte output, hence the software is broken into sections starting at 256 byte boundaries and concatenated together to form the monitor eprom. Each 256 byte section starts with a jump table to the functions needed by other blocks.
