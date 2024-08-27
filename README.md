@@ -4,6 +4,7 @@ Historical 6809 development board, resurrected in MAME.
 
 Derived from Digicoolthings mecb MAIM configuration with changes gleaned from other sources
 
+[mecb6809](https://github.com/epaell/MECB)
 
 ## Features
 
@@ -66,6 +67,86 @@ ME7FA   EQU     $D7FA ; QT VEC
 ZE7FC   EQU     $D7FC ; OUT VEC
 ZE7FE   EQU     $D7FE ; IN VEC
 ```
+
+Original source code development was limited by the assembler used to a maximum of 256 byte output, hence the software is broken into sections starting at 256 byte boundaries and concatenated together to form the monitor eprom. Each 256 byte section starts with a jump table to the functions needed by other blocks.
+
+Various functions are redirected through ram jump tables to enable changes at run time without re-compiling. The original version can switch between lcd/keyboard and serial terminal by examining the DSR and DCD values at boot time (this is disabled at preset  - all I/O is done through serial by default. this can change when the keyboard emulation is made to work.
+
+
+## ram redirection vectors
+
+|address|name      |default|
+|-------|----------|-------|
+|e7e5   |SWI3      |none   |
+|e7e7   |SWI2      |none   |
+|e7e9   |FIRQ      |none   |
+|e7f4   |IRQ       |none   |
+|e7f6   |SWI       |ff83   |
+|e7f2   |NMI       |ff22   |
+|fixed  |Reset     |ff00   |
+|       |          |       |
+|e7fa   |Qterm keyb|fc10   |
+|       |Qtern acia|f85a   |
+|e7fc   |Out lcd   |f90c   |
+|       |Out acia  |f84b   |
+|e7fe   |In keyb   |fc32   |
+|       |In acia   |f83c   |
+
+* Break button tied to NMI to enter monitor
+* SWI used to enter monit fhrough code breakpoint
+
+
+## Sections
+
+|address|purpose   |
+|-------|----------|
+|f800   |acia      |
+|f900   |lcd       |
+|fa00   |rtc       |
+|fb00   |S rec load|
+|fc00   |keyboard  |
+|fd00   |text etc  |
+|fe00   |modify    |
+|ff00   |monitor   |
+
+## Jump tables
+
+|acia |function|jump|
+|-----|--------|----|
+|f800 |init    |f808|
+|f802 |in ch   |f83c|
+|f804 |out ch  |f84b|
+
+|clock|function|location(approx)|
+|-----|--------|----|
+|fa00 |init    |fab1|
+|fa03 |time    |fa06|
+
+|lcd  |function  |jump|
+|-----|----------|----|
+|f900 |pr xxxx   |f90e|
+|f902 |pr aa     |f91a|
+|f904 |op spc    |f938|
+|f906 |op crlf   |f930|
+|f908 |lcd init  |f93e|
+|f90a |lcd setvev|f958|
+|f90c |lcd out   |f962|
+
+|s-records|function|jump |
+|---------|--------|-----|
+|fb00     |        |fb04 |
+|fb02     |        |fb7a |
+
+|keyboard|function|jump |
+|--------|--------|-----|
+|fc00    |get ch  |fc00 |
+
+|modify|function|jump |
+|------|--------|-----|
+|fe00  |modify  |fe09 |
+|fe03  |a to hex|fe90 |
+
+
 ## Monitor
 
 Monitor commands are a single character followed by optional numbers and ended by return.
@@ -118,7 +199,9 @@ Cc A  B  D  X  Y  U  Pc S
 
 * terminal invocation
 
+```
 putty -load mame-rs232
+```
 
 (raw protocol on localhost, port 1234)
 
