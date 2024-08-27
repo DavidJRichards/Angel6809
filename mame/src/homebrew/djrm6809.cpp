@@ -10,7 +10,7 @@
 #include "machine/6522via.h"
 #include "machine/input_merger.h"
 #include "machine/mc146818.h"
-#include "machine/6840ptm.h"
+//#include "machine/6840ptm.h"
 #include "machine/clock.h"
 #include "bus/rs232/rs232.h"
 #include "emupal.h"
@@ -26,7 +26,7 @@ public:
 		: driver_device(mconfig, type, tag)
 		, m_maincpu(*this, "maincpu")
 		, m_acia(*this, "acia")
-    , m_ptm(*this, "ptm")
+//    , m_ptm(*this, "ptm")
 		, m_lcdc(*this, "hd44780")
 		, m_rtc(*this, "rtc")
 	{ }
@@ -39,7 +39,7 @@ private:
 
 	required_device<cpu_device> m_maincpu;
 	required_device<mos6551_device> m_acia;
-	required_device<ptm6840_device> m_ptm;
+//	required_device<ptm6840_device> m_ptm;
 	required_device<hd44780_device> m_lcdc;
 	required_device<mc146818_device> m_rtc;
 };
@@ -54,7 +54,7 @@ void djrm6809_state::djrm6809_mem(address_map &map)
 	map(0x0000, 0x1FFF).rom();
 	map(0xe000, 0xe7ff).ram();
 	map(0x8000, 0x800f).m("via", FUNC(via6522_device::map));
-	map(0xc000, 0xc007).rw("ptm", FUNC(ptm6840_device::read), FUNC(ptm6840_device::write));
+//	map(0xc000, 0xc007).rw("ptm", FUNC(ptm6840_device::read), FUNC(ptm6840_device::write));
 	map(0xE800, 0xffff).rom();
 	map(0xC400, 0xC403).rw("acia", FUNC(mos6551_device::read), FUNC(mos6551_device::write));	
 	map(0xC800, 0xC801).rw(m_lcdc, FUNC(hd44780_device::read), FUNC(hd44780_device::write));
@@ -68,8 +68,8 @@ void djrm6809_state::djrm6809_mem(address_map &map)
 
 // This is here only to configure our terminal for interactive use
 static DEVICE_INPUT_DEFAULTS_START( terminal )
-	DEVICE_INPUT_DEFAULTS( "RS232_RXBAUD", 0xff, RS232_BAUD_115200 )
-	DEVICE_INPUT_DEFAULTS( "RS232_TXBAUD", 0xff, RS232_BAUD_115200 )
+	DEVICE_INPUT_DEFAULTS( "RS232_RXBAUD", 0xff, RS232_BAUD_9600 )
+	DEVICE_INPUT_DEFAULTS( "RS232_TXBAUD", 0xff, RS232_BAUD_9600 )
 	DEVICE_INPUT_DEFAULTS( "RS232_DATABITS", 0xff, RS232_DATABITS_8 )
 	DEVICE_INPUT_DEFAULTS( "RS232_PARITY", 0xff, RS232_PARITY_NONE )
 	DEVICE_INPUT_DEFAULTS( "RS232_STOPBITS", 0xff, RS232_STOPBITS_1 )
@@ -78,7 +78,8 @@ DEVICE_INPUT_DEFAULTS_END
 void djrm6809_state::djrm6809_palette(palette_device &palette) const
 {
 	palette.set_pen_color(0, rgb_t(138, 146, 148));
-	palette.set_pen_color(1, rgb_t(92, 83, 88));
+//	palette.set_pen_color(1, rgb_t(92, 83, 88));
+	palette.set_pen_color(1, rgb_t(46, 42, 44));
 }
 
 static const gfx_layout charlayout =
@@ -124,9 +125,9 @@ void djrm6809_state::djrm6809(machine_config &config)
 	rs232.cts_handler().set("acia", FUNC(mos6551_device::write_cts));
 	rs232.set_option_device_input_defaults("terminal", DEVICE_INPUT_DEFAULTS_NAME(terminal)); // must be below the DEVICE_INPUT_DEFAULTS_START block
 	
-	PTM6840(config, m_ptm, 16_MHz_XTAL / 4);
-	m_ptm->set_external_clocks(4000000.0/14.0, 4000000.0/14.0, (4000000.0/14.0)/8.0);
-	m_ptm->irq_callback().set_inputline("maincpu", M6809_IRQ_LINE);
+//	PTM6840(config, m_ptm, 16_MHz_XTAL / 4);
+//	m_ptm->set_external_clocks(4000000.0/14.0, 4000000.0/14.0, (4000000.0/14.0)/8.0);
+//	m_ptm->irq_callback().set_inputline("maincpu", M6809_IRQ_LINE);
 
 /* LCD hardware */
 	PALETTE(config, "palette", FUNC(djrm6809_state::djrm6809_palette), 2);
@@ -136,9 +137,10 @@ void djrm6809_state::djrm6809(machine_config &config)
 	m_lcdc->set_lcd_size(2, 40);
 
 /* rtc */
-	MC146818(config, m_rtc, 32.768_kHz_XTAL);
-	//m_rtc->irq().set(FUNC(micronic_state::mc146818_irq));   Connects to common irq line used by below PIAs and UART
-
+  MC146818(config, m_rtc, 4.194304_MHz_XTAL);	
+  //m_rtc->irq().set(FUNC(micronic_state::mc146818_irq));   Connects to common irq line used by below PIAs and UART
+  m_rtc->irq().set("mainirq", FUNC(input_merger_device::in_w<2>));   // Connects to common irq line 
+#if 1
 	/* video hardware */
 	screen_device &screen(SCREEN(config, "screen", SCREEN_TYPE_LCD));
 	screen.set_refresh_hz(50);
@@ -147,6 +149,8 @@ void djrm6809_state::djrm6809(machine_config &config)
 	screen.set_size(240, 18);
 	screen.set_visarea(0, 240-1, 0, 18-1);
 	screen.set_palette("palette");
+#endif
+
 	
 	input_merger_device &merger(INPUT_MERGER_ANY_HIGH(config, "mainirq"));
 	merger.output_handler().set_inputline(m_maincpu, M6809_IRQ_LINE);
@@ -156,7 +160,7 @@ void djrm6809_state::djrm6809(machine_config &config)
 
 ROM_START(djrm6809)
 	ROM_REGION(0x10000, "maincpu",0)
-	ROM_LOAD("djrm6809mon.bin",   0xF800, 0x800, CRC(b8183a64) SHA1(886250eecb6638eb7a8e34652eeff7741bda6e4c))
+	ROM_LOAD("djrm6809mon.bin",   0xF800, 0x800, CRC(b8183a64) SHA1(886250eecb6638eb7a8e34652eeff7741bda6e4c)) // modified
 	ROM_LOAD("2716a.bin",   0x1800, 0x800, CRC(bf80f02a) SHA1(ab34ad0f0ebad941ee86e13a24564312648b1c08)) // original dumped rom
 	ROM_LOAD("2716b.bin",   0x1000, 0x800, CRC(5fccd332) SHA1(574462eedae76698b940d6f18556cc6c1931fb8f)) // original dumped rom
 	ROM_LOAD("2716c.bin",   0x800,  0x800, CRC(48434a58) SHA1(4a78301c0e3841bf634153595efc18d912c3c3b3)) // original dumped rom

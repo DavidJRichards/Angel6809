@@ -8,64 +8,62 @@ Derived from Digicoolthings mecb MAIM configuration with changes gleaned from ot
 
 ## Features
 
-* 2k monitor rom
-* 8k figForth rom
-* 8k battery backed ram
-* 2k scratch ram
-* 6551 acia
-* 6522 via
-* 6818 rtc
-* polled keyboard
-* 2x40 LCD display
-* RS232 interface
 
-[MAME files](./mame)
+## Memory Map
+|memory range|device            |           |
+|------------|------------------|-----------|
+|0x2000, 0x3fff|8k ram          |b-backup   |
+|0x0000, 0x1FFF|8k rom          |Forth      |
+|0xe000, 0xe7ff|2k ram          |system     |
+|0x8000, 0x800f|via6522         |keyboard   |
+|0xc000, 0xc007|ptm6840         |not fitted |
+|0xE800, 0xffff|2k eprom        |monitor    |
+|0xC400, 0xC403|mos6551         |RS232      |
+|0xC800, 0xC801|hd44780         |LCD display|
+|0xD000, 0xD000|mc146818_address|RTC        |
+|0xD001, 0xD001|mc146818_data   | "         |
 
 ![Boad top view](./photos/20140502_180034.jpg)
 
-![Boad bottom view](./photos/20140502_180118.jpg)
+[Boad bottom view](./photos/20140502_180118.jpg)
 
-![Keyboard](./photos/IMG_20210312_213837.png)
+[Keyboard](./photos/IMG_20210312_213837.png)
 
-![2x40 LCD](./photos/LCD_2x40.png)
+[2x40 LCD](./photos/LCD_2x40.png)
 
-## Memory Map
-
+## Constants
 ```
-Z0142   EQU     $0142	; Forth cold entry
-Z0194   EQU     $0194	; Forth warm entry
-M0400   EQU     $0400	; keyboard delay
+CPU Crystal frequency 4.0 Mhz = 1MHz clock
+ACIA Clock frequency 1.8432 Mhz
+RTC Clock frequency 4.194304 MHz
+M0400   EQU     $0400 ; keyboard delay
+MDIPG   EQU     $E7   ; Monitor direct page
+RS232 baudrate 9600 bps
 
-M8000   EQU     $8000 ; VIA
-M8002   EQU     $8002 ; VIA_
+## System ram locations
+```
+        E000 to E0FF  ; unused
+        2000 to 3FFF  ; Forth use
+ME100   EQU     $E100 ; RX BUFFER
+ME200   EQU     $E200 ; FILL INDEX
+ME201   EQU     $E201 ; FULL FLAG
+ME7B0   EQU     $E7B0 ; STACK
+ME7D0   EQU     $E7D0 ; MONITOR STACK
+ZE7E5   EQU     $E7E5 ; SW3 / USR VEC
+ZE7E7   EQU     $E7E7 ; SW2 VEC
+ZE7E9   EQU     $E7E9 ; FIQ VEC
+ME7EC   EQU     $E7EC ; KB TMP
+ME7ED   EQU     $E7ED ; CHSM
+ZE7F2   EQU     $E7F2 ; NMI VEC
+ZE7F4   EQU     $E7F4 ; IRQ VEC
+ZE7F6   EQU     $E7F6 ; SWI VEC
+M00F8   EQU       $F8 ; stack save 
+ME7F8   EQU     $E7F8 ; STK SAV
+ME7FA   EQU     $E7FA ; QT VEC
+ZE7FC   EQU     $E7FC ; OUT VEC
+ZE7FE   EQU     $E7FE ; IN VEC
+```
 
-MC400   EQU     $C400 ; ACIA
-
-MC800   EQU     $C800 ; LCD
-MC801   EQU     $C801 ; LCD_
-
-MD000   EQU     $D000 ; CLOCK
-MD001   EQU     $D001 ; CLOCK_
-
-MDIPG   EQU	$D7   ; Monitor direct page
-ME100   EQU     $D100 ; RX BUFFER
-ME200   EQU     $D200 ; FILL INDEX
-ME201   EQU     $D201 ; FULL FLAG
-ME7B0   EQU     $D7B0 ; STACK
-ME7D0   EQU     $D7D0 ; MONITOR STACK
-ZE7E5   EQU     $D7E5 ; SW3 / USR VEC
-ZE7E7   EQU     $D7E7 ; SW2 VEC
-ZE7E9   EQU     $D7E9 ; FIQ VEC
-ME7EC   EQU     $D7EC ; KB TMP
-ME7ED   EQU     $D7ED ; CHSM
-ZE7F2   EQU     $D7F2 ; NMI VEC
-ZE7F4   EQU     $D7F4 ; IRQ VEC
-ZE7F6   EQU     $D7F6 ; SWI VEC
-M00F8   EQU     $F8   ; stack save 
-ME7F8   EQU     $D7F8 ; STK SAV
-ME7FA   EQU     $D7FA ; QT VEC
-ZE7FC   EQU     $D7FC ; OUT VEC
-ZE7FE   EQU     $D7FE ; IN VEC
 ```
 
 Original source code development was limited by the assembler used to a maximum of 256 byte output, hence the software is broken into sections starting at 256 byte boundaries and concatenated together to form the monitor eprom. Each 256 byte section starts with a jump table to the functions needed by other blocks.
@@ -93,7 +91,7 @@ Various functions are redirected through ram jump tables to enable changes at ru
 |       |In acia   |f83c   |
 
 * Break button tied to NMI to enter monitor
-* SWI used to enter monit fhrough code breakpoint
+* SWI used to enter monitor fhrough code breakpoint
 
 
 ## Sections
@@ -146,6 +144,11 @@ Various functions are redirected through ram jump tables to enable changes at ru
 |fe00  |modify  |fe09 |
 |fe03  |a to hex|fe90 |
 
+|figForth|function|jump |
+|---------------|-----|
+|0142|Cold start  |     |
+|0000|Warm start  |0194 |
+
 
 ## Monitor
 
@@ -172,8 +175,11 @@ Monitor commands are a single character followed by optional numbers and ended b
 
 Monitor register display has no labels enabling it to fit on a single line of the 40 character display and still leave room to see a command being typed. The display has the following format:
 
+### register display
+
 ```
-Cc A  B  D  X  Y  U  Pc S
+Cc A  B  D  X    Y    U    Pc   Sp
+00 00 00 00 0000 0000 0000 0000 0000
 ```
 
 |Code |Meaning|
@@ -218,6 +224,10 @@ Shows serial console overlaid on mame 2x40 character LCD mimic
 
 
 ## Building from source
+
+
+[MAME files](./mame)
+
 
 Before attempting to build the project maim.lst needs the target definitions added, see patch below for details
 
