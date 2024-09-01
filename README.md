@@ -31,6 +31,8 @@ Derived from Digicoolthings mecb MAIM configuration with changes gleaned from ot
 
 [2x40 LCD](./photos/LCD_2x40.png)
 
+[Datasheets](./documents)
+
 ## Constants
 
 ```
@@ -168,8 +170,8 @@ Monitor commands are a single character followed by optional numbers and ended b
 |G       |Go                  |
 |.       |Modify address      |
 |/       |Modify data         |
-|Return  |next address        |
-|Linefeed|this address ?      |
+|C-Return|next address        |
+|LineFeed|prev address        |
 |T       |Show Date & Time    |
 
 
@@ -185,14 +187,16 @@ Cc A  B  D  X    Y    U    Pc   Sp
 |Code |Meaning|
 |-----|-------|
 |Cc|Condition codes|
-|A |register|
-|B |register|
+|A |hi register|
+|B |low register|
 |D |register (A and B)|
-|X |register|
-|Y |register|
-|U ||
+|X |index register|
+|Y |index register|
+|U |user stack|
 |Pc|program counter|
 |S |stack pointer|
+
+![Condition codes](./documents/20140502_180118.png)
 
 
 ## Notes
@@ -213,14 +217,19 @@ putty -load mame-rs232
 
 * The only working keyboard is by using rs232 nullmodem driver to a TCP port. The 6522 keyboard driver is unimplemented. The Console keyboard and screen is broken somehow. Possible cause is due to having two consoles in the configuration (LCD and rs232)
 
-* All clocks used need to be reviewed and corrected, known to be wrong.
-
+* Interrupts to test
 
 ## Screenshot
 
 Shows serial console overlaid on mame 2x40 character LCD mimic
 
-![Screenshot](./photos/Screenshot1.png)
+[Screenshot 1](./photos/Screenshot1.png)
+
+Here is the serial console in MAME together with the LCD mimic
+
+![Screenshot 2](./photos/Screenshot2.png)
+
+
 
 
 ## Building from source
