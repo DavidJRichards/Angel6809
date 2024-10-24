@@ -1,0 +1,97 @@
+Name            MECB_ChipSelect_System_IO;
+Partno          U1;
+Date            08/2023;
+Revision        01;
+Designer        Greg;
+Company         Digicool Things;
+Assembly        None;
+Location        None;
+Device          g16v8as;
+
+/****************************************************************/
+/*                                                              */
+/* Note: For an ATF16V8 in Simple Mode pins 15 and 16           */
+/*  (center macrocells) are permanently configured as           */
+/*  combinatorial outputs.                                      */   
+/*                                                              */
+/****************************************************************/
+
+/*
+ *
+ * Inputs: Inputs were assigned based on the ECB bus pin sequence (for ease of PCB routing).
+ * Active low pins are inverted at the pin so all signals can be consistently treated as positive logic.
+ *
+ */
+
+Pin 1 	= a3;
+Pin 2 	= a4;
+Pin 3 	= a5;
+Pin 4 	= a6;
+Pin 19	= a7;
+
+Pin 18 = a11;
+Pin 7 	= a12;
+Pin 12 = a13;
+Pin 5 	= a14;
+Pin 13 = a15;
+
+Pin 9 	= clk;
+Pin 8 	= !iorq;
+Pin 11 = !mreq;
+Pin 6 	= !rd; 
+Pin 17 = !wr;
+
+/*
+ *
+ * Outputs: Define outputs
+ * Active low pins are inverted at the pin so all signals can be consistently treated as positive logic.
+ *
+ */
+
+Pin 14 = !cs0;
+Pin 15 = !cs1;
+Pin 16 = !cs2;
+
+/*
+ * Memory Map options follow (un-comment only one!)
+ */
+
+/*
+ *
+ * Logic: System I/O Card - I/O Address Allocations
+ *
+ * cs0 : (UART) iorq asserted for I/O address range 0x28 - 0x2F
+ * cs1 : (RTC) iorq asserted for I/O address range 0x20 - 0x27
+
+ * cs0 : (UART) iorq asserted for I/O address range 0x20 - 0x27
+ * cs1 : (RTC) iorq asserted for I/O address range 0x40 - 0x4F
+ * cs2 : (VIA) iorq asserted for I/O address range 0x30 - 0x3F
+ *
+ * cs0 = iorq & clk & !a7 & !a6 & a5 & !a4 & a3;
+ * cs1 = iorq & clk & !a7 & !a6 & a5 & !a4 & !a3;
+ *
+cs0 = iorq & clk & !a7 & !a6 &  a5 & !a4 & !a3;
+cs1 = iorq & clk & !a7 &  a6 & !a5 & !a4;
+ *                  80    40    20    10    08
+ */
+
+cs0 = iorq & clk & !a7 & !a6 &  a5 & !a4 & !a3;
+cs1 = iorq & clk & !a7 &  a6 & !a5 & !a4;
+cs2 = iorq       & !a7 & !a6 &  a5 &  a4;
+
+/*
+ *
+ * Logic: CreatiVision memory map re-Creation
+ *
+ * cs0 : (ACIA) Disabled (ACIA not used)
+ * cs1 : (PTM) Disabled (PTM not used)
+ * cs2 : (PIA) mreq asserted and clk high for memory address range 0x1xxx
+ *
+ */
+/*
+cs0 = 'b'0;
+cs1 = 'b'0;
+cs2 = mreq & clk & !a15 & !a14 & !a13 & a12;
+*/
+
+
