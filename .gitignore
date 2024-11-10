@@ -18,3 +18,5 @@ firmware/roms
 firmware/tests
 *WinCupl/*/*.pdf
 mame*
+/ch376*
+gcc*

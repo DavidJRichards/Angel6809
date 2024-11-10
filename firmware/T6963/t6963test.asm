@@ -23,7 +23,7 @@ AWROFF 		EQU $B2 		; RESET AUTO WRITE MODE
 DATAWR      EQU $C0         ; data write
 BITRES 		EQU $F0 		; Bit RESET
 BITSET 		EQU $F8 		; Bit SET
-T6963_BASE  EQU $C0E0
+T6963_BASE  EQU $C0D0
 CMDP 		EQU $01 		; CMD PORT 
 DTAP	    EQU $00 		; DATA PORT 
 
@@ -509,12 +509,13 @@ T6963_POS
         lda     #ADPSET
         lbsr    CMD
 
-        PSHS    U
-        PULS    B
-        PULS    A
-        TFR     D,U
+;        PSHS    U
+;        PULS    B
+;        PULS    A
+;        TFR     D,U
 
         tfr     u,d     ; mask to 6 bits (column)
+        exg     a,b
         anda    #$3f
         lbsr    DT1
         
