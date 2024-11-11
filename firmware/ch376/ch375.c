@@ -22,10 +22,6 @@
 #include <cmoc.h>
 #include "types.h"
 #include "ch375.h"
-//unsigned char *irqVector = * (unsigned char **) 0xFFF8;
-
-//unsigned char ch375_dport = * (unsigned char *) 0xC050;
-//unsigned char ch375_sport = * (unsigned char *) 0xC051;
 
 static uint8_t ch_ver;
 static uint8_t ch_rd = 0x28;
@@ -50,14 +46,7 @@ static uint8_t ch375_rpoll(void)
 //    kprintf("ch375_rpoll %2x", r);
     return r;
 }
-#if 0
-static uint8_t ch375_cmd_r(uint8_t cmd)
-{
-    ch375_wcmd(cmd);
-//    kprintf("cmd_r %2x\n", cmd);
-    return ch375_rpoll();
-}
-#endif
+
 static void ch375_cmd2(uint8_t cmd, uint8_t data)
 {
 //    kprintf("cmd2: %2x %2x\n", cmd, data);
@@ -66,15 +55,30 @@ static void ch375_cmd2(uint8_t cmd, uint8_t data)
     ch375_wdata(data);
 }
 
-#if 0
-static uint8_t ch375_cmd2_r(uint8_t cmd, uint8_t data)
+void ch375_rblock(uint8_t *ptr)
 {
-//    kprintf("cmd2_r: %2x %2x\n", cmd, data);
-    ch375_wcmd(cmd);
-    ch375_wdata(data);
-    return ch375_rpoll();
+  int i;
+  uint_fast8_t r;
+  
+  for(i=0; i<64; i++)
+  {            
+    r = ch375_rdata();
+    *ptr++=r;
+  }
+  
 }
-#endif 
+void ch375_wblock(uint8_t *ptr)
+{
+  int i;
+  uint_fast8_t r;
+  
+  for(i=0; i<64; i++)
+  {            
+    r=*ptr++;
+    ch375_wdata(r);
+  }
+}
+
 /*static*/ int ch375_xfer(uint_fast8_t dev, bool is_read, uint32_t lba, uint8_t *dptr)
 {
     uint_fast8_t n = 0;
@@ -163,8 +167,9 @@ uint_fast8_t ch375_probe(void)
         nap20();
     }
     if (r != 0x14)
-//        return 0;
+        return 0;
     /* And done */
     //djrm ch_dev = td_register(0, ch375_xfer, td_ioctl_none, 1);
+    kprintf("ch37x poll complete\n"); // djrm
     return 1;
 }

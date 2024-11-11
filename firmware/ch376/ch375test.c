@@ -7,9 +7,9 @@
 #include "types.h"
 #include "ch375.h"
 
-uint_fast8_t dev = 0;   // first device
+uint_fast8_t dev = 0;   // first device (IGNORED)
 bool is_read = 1;       // read
-uint32_t lba = 10;      // block 10
+uint32_t lba = 0;       // block 0
 uint8_t dptr[512];      // data buffer
 
 #define ASSIST09_OUTCH 1
@@ -34,23 +34,72 @@ void newOutputRoutine(void)
     }
 }
 
+
+void dump(unsigned char * data)
+{
+  int i,j,k,t;
+  unsigned char c;
+  char buffer_[12];
+  printf("\n   \t");
+  for(i=0; i< 32; i++)
+  {
+    sprintf(buffer_,"%02x",i);
+    printf("%s ",buffer_);
+  }
+  printf("\n\n");
+
+  k=0;
+  for(j=0; j<16; j++)
+  {
+    t=k;
+    sprintf(buffer_,"%03x",k);
+    printf("%s\t",buffer_);
+
+    for(i=0; i< 32; i++)
+    {
+        c=data[k++];
+        sprintf(buffer_,"%02x",c);
+        printf("%s,",buffer_);
+    }
+    k=t;
+    printf("\t");
+    for(i=0; i< 32; i++)
+    {
+        c=data[k++];
+        if(c>=0x20 && c<=0x7f)
+          printf("%c",c);
+        else
+          printf(".");
+    }
+    printf("\n");
+  }
+}
+
+
 int main(void)
 {
+  int i;
+  for(i=0; i<512; i++)
+    dptr[i]=0x24;
+
   oldCHROUT = setConsoleOutHook(newOutputRoutine);
-  printf("ch375 test!\n\r");
+  printf("ch375 test\n");
 
   if(ch375_probe())
   {
     ch375_xfer(dev, is_read, lba, dptr); 
+    dump(dptr);
+    printf("\n");
   }
+
   return 0;
 }
 
 void nap20(void)
 {
-asm{
+  asm{
   pshs  x
-  ldx #20
+  ldx #1
 	; ***************************
 	; ROUTINE:		DLY
 	; PURPOSE:		DELAY ROUT1NE
@@ -59,24 +108,14 @@ asm{
 	; REGISTERS USED:	X
 	; ****************************
 
-DLY	BRA	DLY1
+DLY	  BRA	DLY1
 DLY1	BRA	DLY2
 DLY2	BRA	DLY3
 DLY3	BRA	DLY4
 DLY4	LEAX	-1,X
-	BNE	DLY
-  puls  x,pc
-;	RTS
-}
-}
-
-void ch375_rblock(uint8_t *ptr)
-{
-  ;// __z88dk_fastcall;
-}
-void ch375_wblock(uint8_t *ptr)
-{
-  ;// __z88dk_fastcall;
+	    BNE	DLY
+      puls  x,pc
+  }
 }
 
 

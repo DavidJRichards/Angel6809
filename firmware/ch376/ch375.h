@@ -1,6 +1,6 @@
 extern void nap20(void);
-extern void ch375_rblock(uint8_t *ptr);// __z88dk_fastcall;
-extern void ch375_wblock(uint8_t *ptr);// __z88dk_fastcall;
+extern void ch375_rblock(uint8_t *ptr);
+extern void ch375_wblock(uint8_t *ptr);
 extern int ch375_xfer(uint_fast8_t dev, bool is_read, uint32_t lba, uint8_t *dptr);
 extern uint_fast8_t ch375_probe(void);
 
