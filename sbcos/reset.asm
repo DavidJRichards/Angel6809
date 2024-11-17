@@ -68,28 +68,28 @@ Nextvec3       lda   BRKvector+1       ;
                sta   BRKvector+2       ;
                sty   BRKvector+1       ;
                stx   BRKvector         ;
-Nextvec4       lda   #<ACIA0_Scan
+Nextvec4       lda   #<ACIA2_Scan
                sta   VEC_IN
-		   lda   #>ACIA0_Scan
+	       lda   #>ACIA2_Scan
                sta   VEC_IN+1
-	         lda   #<ACIA0_Output
+	       lda   #<ACIA2_Output
                sta   VEC_OUT
-		   lda   #>ACIA0_OUTPUT
+	       lda   #>ACIA2_OUTPUT
                sta   VEC_OUT+1
-	         lda   #<Psave
+	       lda   #<Psave
                sta   VEC_SV
-	         lda   #>Psave
+	       lda   #>Psave
                sta   VEC_SV+1
-		   lda   #<pload
+	       lda   #<pload
                sta   VEC_LD
-		   lda   #>pload
+	       lda   #>pload
                sta   VEC_LD+1
 ;
 ; select the IO device driver here       
 ;
 		   jsr   VIA1_init	   ; init the I/O devices
-		   jsr   VIA2_init	   ; init the I/O devices
-		   jsr   ACIA0_init	   ; init the I/O devices
+		   jsr   ACIA1_init	   ; init the I/O devices
+		   jsr   ACIA2_init	   ; init the I/O devices
 
 Clr_regs       lda   #$00              ; Clear registers
                TAY                     ;

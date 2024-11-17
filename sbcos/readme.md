@@ -57,3 +57,8 @@ To convert the binary image to s-records srec-cat is used:
 * Note the offeset needed is two less than the code start address.
 * Note the top of RAM address is hard coded in the basic source as constant "Ram_top" for 32k RAM I set this to $8000, for 2k ram I set this to $1f00 ($2000 possibly ok)
 
+* Console I/O defaults to 6850 ACIA at $C008 9600 bps 
+* File and device name changed, VIA2 removed from build.
+* VIA1 (PS2KB) and ACIA1 (6551) initialised but nor used.
+* LEDS show '6502'
+

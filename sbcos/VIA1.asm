@@ -28,12 +28,34 @@ Via1PRA1       =     Via1Base+$F
 ;***********************************************************************
 ; 6522 VIA I/O Support Routines
 ;
-Via1_init      ldx   #$00              ; get data from table
+Via1_init      
+               LDX   #<PS2KB_Input      ; set up RAM vectors for
+               LDA   #>PS2KB_Input      ; Input, Output, and Scan
+               TAY                     	; Routines
+               EOR   #$A5              	;
+               sta   ChrInVect+2       	;
+               sty   ChrInVect+1       	;
+               stx   ChrInVect         	;
+               LDX   #<PS2KB_Scan  	;
+               LDA   #>PS2KB_Scan       ;
+               TAY                     	;
+               EOR   #$A5              	;
+               sta   ScanInVect+2      	;
+               sty   ScanInVect+1      	;
+               stx   ScanInVect        	;
+
+               ldx   #$00              ; get data from table
 Via1init1      lda   Via1idata,x       ; init all 16 regs from 00 to 0F
                sta   Via1Base,x        ; 
                inx                     ; 
                cpx   #$0f              ; 
                bne   Via1init1         ;       
+               
+; setup via for keyboard
+               lda      #$08
+               sta      Via1PCR
+               lda	Via1PRA
+                              
                rts                     ; done
 ;
 Via1idata      .byte $00               ; prb  '00000000'
@@ -52,6 +74,27 @@ Via1idata      .byte $00               ; prb  '00000000'
                .byte $7f               ; ifr
                .byte $7f               ; ier
 ; 
+keyboard_cidta
+; CIDTA - RETURN CONSOLE INPUT CHARACTER
+; OUTPUT: C=0 IF NO DATA READY, C=1 A=CHARACTER
+; U VOLATILE
+
+PS2KB_Scan
+                lda    Via1IFR         ; LOAD STATUS REGISTER
+                lsr
+                lsr
+                BCC     kcirtn          ; RETURN IF NOTHING
+                LDA     Via1PRA         ; LOAD DATA BYTE
+kcirtn          RTS                     ; RETURN TO CALLER
+
+PS2KB_Input
+                JSR     PS2KB_Scan
+                BCC     PS2KB_Input
+                RTS
+
+
+        
+
 ;
 ;
 ;end of file

@@ -359,11 +359,11 @@ HdLp1   	jsr     GetHex          ; Get the first/next/last data byte
         	bne     HdDlF1          ; If failed, report it
         	; Another successful record has been processed
         	lda     #"#"            ; Character indicating record OK = '#'
-        	sta	ACIA0dat        ; write it out but don't wait for output 
+        	sta	ACIA2dat        ; write it out but don't wait for output 
         	jmp     HdwRecs         ; get next record     
 HdDlF1  	lda     #"F"            ; Character indicating record failure = 'F'
         	sta     dlfail          ; upload failed if non-zero
-        	sta	ACIA0dat        ; write it to transmit buffer register
+        	sta	ACIA2dat        ; write it to transmit buffer register
         	jmp     HdwRecs         ; wait for next record start
 HdEr1   	cmp     #1              ; Check for end-of-record type
         	beq     HdEr2
