@@ -1,0 +1,575 @@
+
+6502/65C02 Turbo Assembler listing file of "sbc.asm"
+done on Thu Nov 14 19:48:13 2024
+
+
+.2000  78         sei              RamStart       SEI                     ; diable interupts
+.2001  d8         cld                             CLD                     ; clear decimal mode                      
+.2002  a2 ff      ldx #$ff                        LDX   #$FF              ;
+.2004  9a         txs                             TXS                     ; init stack pointer
+.2005  20 12 20   jsr $2012                       jsr   Via1_init
+.2008  20 68 20   jsr $2068                       jsr   ACIA1_init
+.200b  20 cb 20   jsr $20cb                       jsr   ACIA2_init	       ; init the I/O devices
+.200e  58         cli                             CLI                     ; Enable interrupt system
+.200f  4c 7e 22   jmp $227e                       JMP  MonitorBoot        ; Monitor for cold reset                       
+.2012                              via1_init
+.2012  a2 62      ldx #$62                        LDX   #<PS2KB_Input      ; set up RAM vectors for
+.2014  a9 20      lda #$20                        LDA   #>PS2KB_Input      ; Input, Output, and Scan
+.2016  a8         tay                             TAY                     	; Routines
+.2017  49 a5      eor #$a5                        EOR   #$A5              	;
+.2019  8d ed 03   sta $03ed                       sta   ChrInVect+2       	;
+.201c  8c ec 03   sty $03ec                       sty   ChrInVect+1       	;
+.201f  8e eb 03   stx $03eb                       stx   ChrInVect         	;
+.2022  a2 57      ldx #$57                        LDX   #<PS2KB_Scan  	;
+.2024  a9 20      lda #$20                        LDA   #>PS2KB_Scan       ;
+.2026  a8         tay                             TAY                     	;
+.2027  49 a5      eor #$a5                        EOR   #$A5              	;
+.2029  8d f0 03   sta $03f0                       sta   ScanInVect+2      	;
+.202c  8c ef 03   sty $03ef                       sty   ScanInVect+1      	;
+.202f  8e ee 03   stx $03ee                       stx   ScanInVect        	;
+.2032  a2 00      ldx #$00                        ldx   #$00              ; get data from table
+.2034  bd 48 20   lda $2048,x      Via1init1      lda   Via1idata,x       ; init all 16 regs from 00 to 0F
+.2037  9d 30 c0   sta $c030,x                     sta   Via1Base,x        ; 
+.203a  e8         inx                             inx                     ; 
+.203b  e0 0f      cpx #$0f                        cpx   #$0f              ; 
+.203d  d0 f5      bne $2034                       bne   Via1init1         ;       
+.203f  a9 08      lda #$08                        lda      #$08
+.2041  8d 3c c0   sta $c03c                       sta      Via1PCR
+.2044  ad 31 c0   lda $c031                       lda	Via1PRA
+.2047  60         rts                             rts                     ; done
+
+>2048  00                          Via1idata      .byte $00               ; prb  '00000000'
+>2049  00                                         .byte $00               ; pra  "00000000'
+>204a  00                                         .byte $00               ; ddrb 'iiiiiiii'
+>204b  00                                         .byte $00               ; ddra 'iiiiiiii'
+>204c  00                                         .byte $00               ; tacl  
+>204d  00                                         .byte $00               ; tach  
+>204e  00                                         .byte $00               ; tall  
+>204f  00                                         .byte $00               ; talh  
+>2050  00                                         .byte $00               ; t2cl
+>2051  00                                         .byte $00               ; t2ch
+>2052  00                                         .byte $00               ; sr
+>2053  00                                         .byte $00               ; acr
+>2054  00                                         .byte $00               ; pcr
+>2055  7f                                         .byte $7f               ; ifr
+>2056  7f                                         .byte $7f               ; ier
+.2057                              keyboard_cidta
+.2057                              ps2kb_scan
+
+.2057  ad 3d c0   lda $c03d                        lda    Via1IFR         ; LOAD STATUS REGISTER
+.205a  4a         lsr                              lsr
+.205b  4a         lsr                              lsr
+.205c  90 03      bcc $2061                        BCC     kcirtn          ; RETURN IF NOTHING
+.205e  ad 31 c0   lda $c031                        LDA     Via1PRA         ; LOAD DATA BYTE
+.2061  60         rts              kcirtn          RTS                     ; RETURN TO CALLER
+.2062                              ps2kb_input
+.2062  20 57 20   jsr $2057                        JSR     PS2KB_Scan
+.2065  90 fb      bcc $2062                        BCC     PS2KB_Input
+.2067  60         rts                              RTS
+.2068  a2 a6      ldx #$a6         ACIA1_init     LDX   #<ACIA1_Input      ; set up RAM vectors for
+.206a  a9 20      lda #$20                        LDA   #>ACIA1_Input      ; Input, Output, and Scan
+.206c  a8         tay                             TAY                     	; Routines
+.206d  49 a5      eor #$a5                        EOR   #$A5              	;
+.206f  8d ed 03   sta $03ed                       sta   ChrInVect+2       	;
+.2072  8c ec 03   sty $03ec                       sty   ChrInVect+1       	;
+.2075  8e eb 03   stx $03eb                       stx   ChrInVect         	;
+.2078  a2 b1      ldx #$b1                        LDX   #<ACIA1_Scan  	;
+.207a  a9 20      lda #$20                        LDA   #>ACIA1_Scan       ;
+.207c  a8         tay                             TAY                     	;
+.207d  49 a5      eor #$a5                        EOR   #$A5              	;
+.207f  8d f0 03   sta $03f0                       sta   ScanInVect+2      	;
+.2082  8c ef 03   sty $03ef                       sty   ScanInVect+1      	;
+.2085  8e ee 03   stx $03ee                       stx   ScanInVect        	;
+.2088  a2 be      ldx #$be                        LDX   #<ACIA1_Output     ;
+.208a  a9 20      lda #$20                        LDA   #>ACIA1_Output     ;
+.208c  a8         tay                             TAY                     	;
+.208d  49 a5      eor #$a5                        EOR   #$A5              	;
+.208f  8d f3 03   sta $03f3                       sta   ChrOutVect+2      	;
+.2092  8c f2 03   sty $03f2                       sty   ChrOutVect+1      	;
+.2095  8e f1 03   stx $03f1                       stx   ChrOutVect        	;
+.2098                              acia1portset
+.2098  a9 9e      lda #$9e                        lda   #$9E               ; 9600/8/1
+.209a  8d e9 c0   sta $c0e9                       sta   ACIA1sta           ; control reg 
+.209d  8d eb c0   sta $c0eb                       sta   ACIA1ctl           ; control reg 
+.20a0  a9 0b      lda #$0b                        lda   #$0B               ; N parity/echo off/rx int off/ dtr active low
+.20a2  8d ea c0   sta $c0ea                       sta   ACIA1cmd           ; command reg 
+.20a5  60         rts                             rts                      ; done
+.20a6                              acia1_input
+.20a6  ad e9 c0   lda $c0e9                       lda   ACIA1Sta           ; Serial port status             
+.20a9  29 08      and #$08                        and   #$08               ; is recvr full
+.20ab  f0 f9      beq $20a6                       beq   ACIA1_Input        ; no char to get
+.20ad  ad e8 c0   lda $c0e8                       Lda   ACIA1dat           ; get chr
+.20b0  60         rts                             RTS                      ;
+.20b1  18         clc              ACIA1_Scan     clc
+.20b2  ad e9 c0   lda $c0e9                       lda   ACIA1Sta           ; Serial port status
+.20b5  29 08      and #$08                        and   #$08               ; mask rcvr full bit
+.20b7  f0 04      beq $20bd                       beq   ACIA1_scan2
+.20b9  ad e8 c0   lda $c0e8                       Lda   ACIA1dat           ; get chr
+.20bc  38         sec              	         sec
+.20bd  60         rts              ACIA1_scan2    rts
+.20be  48         pha              ACIA1_Output   PHA                      ; save registers
+.20bf  ad e9 c0   lda $c0e9        ACIA1_Out1     lda   ACIA1Sta           ; serial port status
+.20c2  29 10      and #$10                        and   #$10               ; is tx buffer empty
+.20c4  f0 f9      beq $20bf                       beq   ACIA1_Out1         ; no
+.20c6  68         pla                             PLA                      ; get chr
+.20c7  8d e8 c0   sta $c0e8                       sta   ACIA1dat           ; put character to Port
+.20ca  60         rts                             RTS                      ; done
+.20cb  a2 28      ldx #$28         ACIA2_init     LDX   #<ACIA2_Input      ; set up RAM vectors for
+.20cd  a9 21      lda #$21                        LDA   #>ACIA2_Input      ; Input, Output, and Scan
+.20cf  a8         tay                             TAY                     	; Routines
+.20d0  49 a5      eor #$a5                        EOR   #$A5              	;
+.20d2  8d ed 03   sta $03ed                       sta   ChrInVect+2       	;
+.20d5  8c ec 03   sty $03ec                       sty   ChrInVect+1       	;
+.20d8  8e eb 03   stx $03eb                       stx   ChrInVect         	;
+.20db  a2 1a      ldx #$1a                        LDX   #<ACIA2_Scan  	;
+.20dd  a9 21      lda #$21                        LDA   #>ACIA2_Scan       ;
+.20df  a8         tay                             TAY                     	;
+.20e0  49 a5      eor #$a5                        EOR   #$A5              	;
+.20e2  8d f0 03   sta $03f0                       sta   ScanInVect+2      	;
+.20e5  8c ef 03   sty $03ef                       sty   ScanInVect+1      	;
+.20e8  8e ee 03   stx $03ee                       stx   ScanInVect        	;
+.20eb  a2 2e      ldx #$2e                        LDX   #<ACIA2_Output     ;
+.20ed  a9 21      lda #$21                        LDA   #>ACIA2_Output     ;
+.20ef  a8         tay                             TAY                     	;
+.20f0  49 a5      eor #$a5                        EOR   #$A5              	;
+.20f2  8d f3 03   sta $03f3                       sta   ChrOutVect+2      	;
+.20f5  8c f2 03   sty $03f2                       sty   ChrOutVect+1      	;
+.20f8  8e f1 03   stx $03f1                       stx   ChrOutVect        	;
+.20fb  a9 32      lda #$32                        lda      #$32
+.20fd  8d f0 c0   sta $c0f0                       sta      $c0f0
+.2100  a9 30      lda #$30                        lda      #$30
+.2102  8d f1 c0   sta $c0f1                       sta      $c0f1
+.2105  a9 35      lda #$35                        lda      #$35
+.2107  8d f2 c0   sta $c0f2                       sta      $c0f2
+.210a  a9 36      lda #$36                        lda      #$36
+.210c  8d f3 c0   sta $c0f3                       sta      $c0f3
+.210f  a9 03      lda #$03         ACIA2portset    lda     #$03            ; reset UART
+.2111  8d 08 c0   sta $c008                        sta     ACIA2sta
+.2114  a9 15      lda #$15                         lda     #$15            ; set 8N1 serial parameter
+.2116  8d 08 c0   sta $c008                        sta     ACIA2sta
+.2119  60         rts                              rts
+.211a  ad 08 c0   lda $c008        ACIA2_Scan      LDA     ACIA2sta        ; check UART status
+.211d  29 01      and #$01                         AND     #$01            ; can read?
+.211f  f0 05      beq $2126                        BEQ     UAGRET          ; if not, return with Z flag set
+.2121  ad 09 c0   lda $c009                        LDA     ACIA2dat        ; read UART data
+.2124  38         sec                              sec
+.2125  60         rts                              rts
+.2126  18         clc              UAGRET          clc
+.2127  60         rts                              RTS
+.2128  20 1a 21   jsr $211a        ACIA2_Input     JSR     ACIA2_Scan
+.212b  90 fb      bcc $2128                        BCC     ACIA2_Input
+.212d  60         rts                              RTS
+.212e  48         pha              ACIA2_Output    PHA                     ; save character
+.212f  ad 08 c0   lda $c008        UAPUTL          LDA     ACIA2sta        ; check UART status
+.2132  29 02      and #$02                         AND     #$02            ; can write?
+.2134  f0 f9      beq $212f                        BEQ     UAPUTL          ; wait if not
+.2136  68         pla                              PLA                     ; restore character
+.2137  8d 09 c0   sta $c009                        STA     ACIA2dat        ; write character
+.213a  60         rts                              RTS
+.213b  4c 7e 22   jmp $227e        Start_OS       jmp   MonitorBoot         ; easy access to monitor program
+.213e  6c eb 03   jmp ($03eb)      Input_chr      jmp   (ChrInVect)       ;
+.2141  6c ee 03   jmp ($03ee)      Scan_input     jmp   (ScanInVect)      ; 
+.2144  6c f1 03   jmp ($03f1)      Output         jmp   (ChrOutVect)      ;
+
+>2147  20 50 43 3d 20 20 41 3d 20 20 58 3d 20 20 59 3d 20 20 53 3d 20 20 50 3d 20 28 4e 56 52 42 44 49 5a 43 29 3d  RegData        .byte" PC=  A=  X=  Y=  S=  P= (NVRBDIZC)="
+
+.216b  20 a3 21   jsr $21a3        PrintReg       Jsr   Print_CR          ; Lead with a CR
+.216e  a2 ff      ldx #$ff                        ldx   #$ff              ;
+.2170  a0 ff      ldy #$ff                        ldy   #$ff              ;
+.2172  c8         iny              Printreg1      iny                     ;
+.2173  b9 47 21   lda $2147,y                     lda   Regdata,y         ;
+.2176  20 44 21   jsr $2144                       jsr   Output            ;
+.2179  c9 3d      cmp #$3d                        cmp   #$3D              ; "="
+.217b  d0 f5      bne $2172                       bne   Printreg1         ;
+.217d  e8         inx              Printreg2      inx                     ;
+.217e  e0 07      cpx #$07                        cpx   #$07              ;
+.2180  f0 0c      beq $218e                       beq   Printreg3         ; done with first 6
+.2182  bd e0 03   lda $03e0,x                     lda   PCH,x             ;  
+.2185  20 b4 21   jsr $21b4                       jsr   Print1Byte        ;
+.2188  e0 00      cpx #$00                        cpx   #$00              ;
+.218a  d0 e6      bne $2172                       bne   Printreg1         ;
+.218c  f0 ef      beq $217d                       beq   Printreg2         ;
+.218e  ca         dex              Printreg3      dex                     ;
+.218f  bd e0 03   lda $03e0,x                     lda   PCH,x             ; get Preg
+.2192  a2 08      ldx #$08                        ldx   #$08              ; 
+.2194  2a         rol              Printreg4      rol                     ;
+.2195  a8         tay                             tay                     ;
+.2196  a9 31      lda #$31                        lda   #$31              ;
+.2198  b0 02      bcs $219c                       bcs   Printreg5         ;
+.219a  e9 00      sbc #$00                        sbc   #$00              ; clc implied:subtract 1
+.219c  20 44 21   jsr $2144        Printreg5      jsr   Output            ;
+.219f  98         tya                             tya                     ;
+.21a0  ca         dex                             dex                     ;
+.21a1  d0 f1      bne $2194                       bne   Printreg4         ;
+.21a3  48         pha              Print_CR       PHA                     ; Save Acc
+.21a4  a9 0d      lda #$0d                        LDA   #$0D              ; "cr"
+.21a6  20 44 21   jsr $2144                       JSR   OUTPUT            ; send it
+.21a9  a9 0a      lda #$0a                        LDA   #$0A              ; "lf"
+.21ab  20 44 21   jsr $2144                       JSR   OUTPUT            ; send it
+.21ae  68         pla                             PLA                     ; Restore Acc
+.21af  60         rts                             RTS                     ; 
+.21b0  20 b4 21   jsr $21b4        Print2Byte     JSR   Print1Byte        ;  prints AAXX hex digits
+.21b3  8a         txa                             TXA                     ;
+.21b4  48         pha              Print1Byte     PHA                     ;  prints AA hex digits
+.21b5  4a         lsr                             LSR                     ;  MOVE UPPER NIBBLE TO LOWER
+.21b6  4a         lsr                             LSR                     ;
+.21b7  4a         lsr                             LSR                     ;
+.21b8  4a         lsr                             LSR                     ;
+.21b9  20 bd 21   jsr $21bd                       JSR   PrintDig          ;
+.21bc  68         pla                             PLA                     ;
+.21bd  84 31      sty $31          PrintDig       sty   ysav              ;  prints A hex nibble (low 4 bits)
+.21bf  29 0f      and #$0f                        AND   #$0F              ;
+.21c1  a8         tay                             TAY                     ;
+.21c2  b9 31 24   lda $2431,y                     LDA   Hexdigdata,Y      ;
+.21c5  a4 31      ldy $31                         ldy   ysav              ;
+.21c7  4c 44 21   jmp $2144                       jmp   output            ;
+.21ca  20 d6 21   jsr $21d6        PrintXSP1      JSR   Print1SP          ;
+.21cd  ca         dex                             dex                     ;
+.21ce  e0 00      cpx #$00         PrintXSP       cpx   #$00              ;
+.21d0  d0 f8      bne $21ca                       bne   PrintXSP1         ;
+.21d2  60         rts                             rts                     ;
+.21d3  20 d6 21   jsr $21d6        Print2SP       jsr   Print1SP          ; print 2 SPACES
+.21d6  a9 20      lda #$20         Print1SP       LDA   #$20              ; print 1 SPACE
+.21d8  4c 44 21   jmp $2144                       JMP   OUTPUT            ;
+.21db  a9 3e      lda #$3e         Input          lda   #$3E              ; Monitor Prompt ">"
+.21dd  85 32      sta $32                         sta   Prompt            ; save prompt chr 
+.21df  20 a3 21   jsr $21a3        Input1         jsr   Print_CR          ; New Line
+.21e2  a5 32      lda $32                         lda   Prompt            ; get prompt
+.21e4  20 44 21   jsr $2144                       jsr   Output            ; Print Prompt
+.21e7  a0 ff      ldy #$ff                        ldy   #$ff              ; pointer
+.21e9  20 3e 21   jsr $213e        InputWait      jsr   Input_Chr         ; get a character
+.21ec  c9 20      cmp #$20                        cmp   #$20              ; is ctrl char?
+.21ee  b0 3e      bcs $222e                       BCS   InputSave         ; no, echo chr 
+.21f0  c9 0d      cmp #$0d                        cmp   #$0d              ; cr
+.21f2  f0 4c      beq $2240                       Beq   InputDone         ; done
+.21f4  c9 1b      cmp #$1b                        cmp   #$1B              ; esc
+.21f6  f0 e7      beq $21df                       beq   Input1            ; cancel and new line
+.21f8  c9 08      cmp #$08                        cmp   #$08              ; bs
+.21fa  f0 09      beq $2205                       beq   backspace         ;
+.21fc  c9 09      cmp #$09                        cmp   #$09              ; TAB key
+.21fe  f0 1c      beq $221c                       beq   tabkey            ;
+.2200  c9 02      cmp #$02                        cmp   #$02              ; Ctrl-B
+.2202  d0 e5      bne $21e9                       bne   InputWait         ; Ignore other codes
+.2204  00         brk                             brk                     ; Force a keyboard Break cmd
+.2205  c0 ff      cpy #$ff         backspace      cpy   #$ff              ;
+.2207  f0 e0      beq $21e9                       beq   InputWait         ; nothing to do
+.2209  88         dey                             dey                     ; remove last char
+.220a  a9 08      lda #$08                        Lda   #$08              ; backup one space
+.220c  20 44 21   jsr $2144                       jsr   Output            ;
+.220f  a9 20      lda #$20                        Lda   #$20              ; Print space (destructive BS)
+.2211  20 44 21   jsr $2144                       jsr   Output            ;
+.2214  a9 08      lda #$08                        Lda   #$08              ; backup one space
+.2216  20 44 21   jsr $2144                       jsr   Output            ;
+.2219  4c e9 21   jmp $21e9                       jmp   InputWait         ; ready for next key
+.221c  a9 20      lda #$20         tabkey         lda   #$20              ; convert tab to space
+.221e  c8         iny                             iny                     ; move cursor
+.221f  30 20      bmi $2241                       bmi   InputTooLong      ; line too long?
+.2221  99 00 03   sta $0300,y                     sta   Buffer,y          ; no, save space in buffer
+.2224  20 44 21   jsr $2144                       jsr   output            ; print the space too
+.2227  98         tya                             tya                     ; test to see if tab is on multiple of 8
+.2228  29 07      and #$07                        and   #$07              ; mask remainder of cursor/8
+.222a  d0 f0      bne $221c                       bne   tabkey            ; not done, add another space
+.222c  f0 bb      beq $21e9                       beq   InputWait         ; done. 
+.222e  c9 61      cmp #$61         InputSave      CMP   #$61              ;   ucase
+.2230  90 02      bcc $2234                       BCC   InputSave1        ;
+.2232  e9 20      sbc #$20                        SBC   #$20              ;
+.2234  c8         iny              InputSave1     INY                     ;
+.2235  30 0a      bmi $2241                       BMI   InputTooLong      ; get next char (up to 127)
+.2237  99 00 03   sta $0300,y                     STA   Buffer,y          ;
+.223a  20 44 21   jsr $2144                       JSR   Output            ; OutputCharacter
+.223d  4c e9 21   jmp $21e9                       jmp   InputWait         ;
+.2240  c8         iny              InputDone      INY                     ;
+.2241  a9 0d      lda #$0d         InputTooLong   LDA   #$0d              ; force CR at end of 128 characters 
+.2243  99 00 03   sta $0300,y                     sta   Buffer,y          ;
+.2246  20 44 21   jsr $2144                       JSR   Output            ;
+.2249  60         rts                             RTS                     ;
+.224a  a9 07      lda #$07         bell           LDA  #$07               ; Ctrl G Bell
+.224c  4c 44 21   jmp $2144                       jmp  Output             ; 
+.224f  8d e2 03   sta $03e2        BRKroutine     sta   ACC               ; save A    Monitor"s break handler
+.2252  8e e3 03   stx $03e3                       stx   Xreg              ; save X
+.2255  8c e4 03   sty $03e4                       sty   Yreg              ; save Y
+.2258  68         pla                             pla                     ; 
+.2259  8d e6 03   sta $03e6                       sta   Preg              ; save P
+.225c  68         pla                             pla                     ; PCL
+.225d  a8         tay                             tay
+.225e  68         pla                             pla                     ; PCH
+.225f  aa         tax                             tax
+.2260  98         tya                             tya 
+.2261  38         sec                             sec                     ;
+.2262  e9 02      sbc #$02                        sbc   #$02              ;
+.2264  8d e1 03   sta $03e1                       sta   PCL               ; backup to BRK cmd
+.2267  b0 01      bcs $226a                       bcs   Brk2              ;
+.2269  ca         dex                             dex                     ;
+.226a  8e e0 03   stx $03e0        Brk2           stx   PCH               ; save PC
+.226d  ba         tsx                             TSX                     ; get stack pointer
+.226e  8e e5 03   stx $03e5                       stx   SPtr              ; save stack pointer
+.2271  20 4a 22   jsr $224a                       jsr   Bell              ; Beep speaker
+.2274  20 6b 21   jsr $216b                       jsr   PrintReg          ; dump register contents 
+.2277  a2 ff      ldx #$ff                        ldx   #$FF              ; 
+.2279  9a         txs                             txs                     ; clear stack
+.227a  58         cli                             cli                     ; enable interrupts again
+.227b  4c 84 22   jmp $2284                       jmp   Monitor           ; start the monitor
+.227e                              monitorboot
+.227e  20 4a 22   jsr $224a                       jsr   bell              ; beep ready
+.2281  20 f1 22   jsr $22f1                       JSR   Version           ;
+.2284                              sysjmp
+.2284  a2 ff      ldx #$ff         Monitor        LDX   #$FF              ; 
+.2286  9a         txs                             TXS			   ;  Init the stack
+.2287  20 db 21   jsr $21db                       JSR   input             ;  line input
+.228a  a9 00      lda #$00                        LDA   #$00              ;
+.228c  a8         tay                             TAY                     ;  set to 1st character in line
+.228d  85 33      sta $33                         sta   LineCnt           ; normal list vs range list 
+.228f  85 37      sta $37          Mon01          STA   Memchr            ;
+.2291  a9 00      lda #$00         Mon02          lda   #$00              ;
+.2293  85 3c      sta $3c                         sta   Hexdigits         ;  holds parsed hex
+.2295  85 3d      sta $3d                         sta   Hexdigits+1       ;
+.2297  20 cb 22   jsr $22cb                       JSR   ParseHexDig       ;  Get any Hex chars
+.229a  a2 0a      ldx #$0a                        LDX   #CmdCount         ;  get # of cmds currently used
+.229c  dd 41 24   cmp $2441,x      Mon08          CMP   CmdAscii,X        ;  is non hex cmd chr?
+.229f  f0 05      beq $22a6                       BEQ   Mon09             ;  yes x= cmd number
+.22a1  ca         dex                             DEX                     ;
+.22a2  10 f8      bpl $229c                       BPL   Mon08             ;
+.22a4  30 de      bmi $2284                       bmi   Monitor           ;  no
+.22a6  8a         txa              Mon09          txa
+.22a7  48         pha                             pha 
+.22a8  98         tya                             tya
+.22a9  48         pha                             pha 
+.22aa  8a         txa                             TXA                     ;
+.22ab  0a         asl                             ASL                     ;  ptr * 2
+.22ac  aa         tax                             TAX                     ;  
+.22ad  20 bd 22   jsr $22bd                       JSR   Mon10             ;  Execute cmd
+.22b0  68         pla                             pla
+.22b1  a8         tay                             tay
+.22b2  68         pla                             pla
+.22b3  aa         tax                             tax 
+.22b4  f0 ce      beq $2284                       BEQ   Monitor           ;  done
+.22b6  bd 62 24   lda $2462,x                     LDA   Cmdseccode,X      ;  
+.22b9  30 d6      bmi $2291                       BMI   Mon02             ;
+.22bb  10 d2      bpl $228f                       bpl   Mon01             ;
+.22bd                              mon10
+.22bd  bd 4c 24   lda $244c,x                     lda   Cmdjmptbl,X
+.22c0  85 34      sta $34                         sta   Modejmp 
+.22c2  e8         inx                             inx
+.22c3  bd 4c 24   lda $244c,x                     lda   Cmdjmptbl,X 
+.22c6  48         pha                             pha
+.22c7  a5 34      lda $34                         lda   Modejmp 
+.22c9  48         pha                             pha
+.22ca  60         rts                             rts
+.22cb  a9 00      lda #$00         ParseHexDig    lda   #$00
+.22cd  85 35      sta $35                         sta   Hexdigcnt         ;  cntr
+.22cf  4c e2 22   jmp $22e2                       jmp   ParseHex05        ;
+.22d2  8a         txa              ParseHex03     TXA                     ;  parse hex dig
+.22d3  a2 04      ldx #$04                        LDX   #$04              ;  
+.22d5  06 3c      asl $3c          ParseHex04     ASL   Hexdigits         ;
+.22d7  26 3d      rol $3d                         ROL   Hexdigits+1       ;
+.22d9  ca         dex                             DEX                     ;
+.22da  d0 f9      bne $22d5                       BNE   ParseHex04        ;
+.22dc  05 3c      ora $3c                         ora   Hexdigits         ;
+.22de  85 3c      sta $3c                         sta   Hexdigits         ;
+.22e0  c6 35      dec $35                         DEC   Hexdigcnt         ;
+.22e2  b9 00 03   lda $0300,y      ParseHex05     LDA   buffer,Y          ;
+.22e5  a2 0f      ldx #$0f                        LDX   #$0F              ;   is hex chr?
+.22e7  c8         iny                             INY                     ;
+.22e8  dd 31 24   cmp $2431,x      ParseHex07     CMP   Hexdigdata,X      ;
+.22eb  f0 e5      beq $22d2                       BEQ   ParseHex03        ;   yes
+.22ed  ca         dex                             DEX                     ;
+.22ee  10 f8      bpl $22e8                       BPL   ParseHex07        ;
+.22f0  60         rts                             RTS                     ; Stored in HexDigits if HexDigCnt <> 0
+.22f1  20 a3 21   jsr $21a3        Version        jsr   Print_CR          ; 
+.22f4  a2 ff      ldx #$ff                        ldx   #$FF              ; set txt pointer
+.22f6  a9 0d      lda #$0d                        lda   #$0d              ; 
+.22f8  e8         inx              PortReadyMsg   inx                     ;
+.22f9  20 44 21   jsr $2144                       JSR   Output            ; put character to Port
+.22fc  bd 6d 24   lda $246d,x                     lda   porttxt,x         ; get message text
+.22ff  d0 f7      bne $22f8                       bne   PortReadyMsg      ; 
+.2301  60         rts                             rts                     ;
+.2302  20 0b 23   jsr $230b        Excute_cmd     jsr   exe1              ;
+.2305  a2 ff      ldx #$ff                        ldx   #$FF              ; reset stack
+.2307  9a         txs                             txs                     ;
+.2308  4c 84 22   jmp $2284                       jmp   Monitor           ;
+.230b  6c 3c 00   jmp ($003c)      exe1           JMP   (Hexdigits)       ;
+.230e  a6 3c      ldx $3c          DOT_cmd        LDX   Hexdigits         ; move address to addrptr
+.2310  a5 3d      lda $3d                         LDA   Hexdigits+1       ;
+.2312  86 3a      stx $3a                         STX   Addrptr           ;
+.2314  85 3b      sta $3b                         STA   Addrptr+1         ;
+.2316  e6 33      inc $33                         inc   LineCnt           ; range list command
+.2318  60         rts                             RTS                     ;
+.2319  c0 01      cpy #$01         CR_cmd         CPY   #$01              ;
+.231b  d0 0d      bne $232a                       BNE   SP_cmd            ;
+.231d  a5 3a      lda $3a                         LDA   Addrptr           ; CR alone - move addrptr to hexdigits
+.231f  09 0f      ora #$0f                        ORA   #$0F              ;  to simulate entering an address
+.2321  85 3c      sta $3c                         STA   Hexdigits         ; *** change 07 to 0f for 16 byte/line
+.2323  a5 3b      lda $3b                         LDA   Addrptr+1         ;
+.2325  85 3d      sta $3d                         STA   Hexdigits+1       ;
+.2327  4c 44 23   jmp $2344                       jmp   SP_cmd2           ;
+.232a  a5 35      lda $35          SP_cmd         LDA   Hexdigcnt         ; Space command entry
+.232c  f0 63      beq $2391                       BEQ   SP_cmd5           ; any digits to process? no - done
+.232e  a6 37      ldx $37                         LDX   Memchr            ; yes - is sec cmd code 0 ? yes - 
+.2330  f0 0c      beq $233e                       BEQ   SP_cmd1           ; yes - 
+.2332  ca         dex                             DEX                     ; Is sec cmd = 1?       
+.2333  f0 21      beq $2356                       BEQ   SP_cmd3           ;       yes - is sec cmd code 1 ?
+.2335  a5 3c      lda $3c                         LDA   Hexdigits         ;             no - ":" cmd processed
+.2337  a2 00      ldx #$00                        ldx   #$00
+.2339  81 3a      sta ($3a,x)                     STA   (Addrptr,x)       ;
+.233b  4c b2 23   jmp $23b2                       JMP   Inc_addrptr       ; set to next address and return
+.233e  20 0e 23   jsr $230e        SP_cmd1        JSR   DOT_cmd           ; sec dig = 0  move address to addrptr
+.2341  4c 56 23   jmp $2356                       jmp   SP_cmd3           ;
+.2344  a5 3a      lda $3a          SP_cmd2        LDA   Addrptr           ; CR cmd entry 
+.2346  29 0f      and #$0f                        and   #$0F              ; *** changed 07 to 0F for 16 bytes/line
+.2348  f0 0c      beq $2356                       BEQ   SP_cmd3           ; if 16, print new line
+.234a  c0 00      cpy #$00                        cpy   #$00              ; if TXT cmd, don"t print the - or spaces between chrs
+.234c  f0 4e      beq $239c                       beq   TXT_cmd1          ;
+.234e  a5 3a      lda $3a                         LDA   Addrptr           ; CR cmd entry 
+.2350  29 07      and #$07                        and   #$07              ; if 8, print -
+.2352  f0 11      beq $2365                       BEQ   SP_cmd33          ;
+.2354  d0 19      bne $236f                       bne   SP_cmd4           ; else print next byte
+.2356  20 a3 21   jsr $21a3        SP_cmd3        JSR   Print_CR          ; "." cmd - display address and data 
+.2359  20 41 21   jsr $2141                       jsr   Scan_Input        ; see if brk requested
+.235c  b0 2f      bcs $238d                       bcs   SP_brk            ; if so, stop 
+.235e  a5 3b      lda $3b                         LDA   Addrptr+1         ; print address
+.2360  a6 3a      ldx $3a                         LDX   Addrptr           ;
+.2362  20 b0 21   jsr $21b0                       JSR   Print2Byte        ;
+.2365  a9 20      lda #$20         SP_cmd33       LDA   #$20              ; " " print 1 - 16 bytes of data
+.2367  20 44 21   jsr $2144                       JSR   OUTPUT            ;
+.236a  a9 2d      lda #$2d                        LDA   #$2D              ; "-"
+.236c  20 44 21   jsr $2144                       JSR   OUTPUT            ;
+.236f  a9 20      lda #$20         SP_cmd4        LDA   #$20              ; " " 
+.2371  20 44 21   jsr $2144                       JSR   OUTPUT            ;
+.2374  c0 00      cpy #$00                        cpy   #$00              ;
+.2376  f0 24      beq $239c                       beq   TXT_Cmd1          ;
+.2378  a2 00      ldx #$00                        ldx   #$00              ;
+.237a  a1 3a      lda ($3a,x)                     LDA   (Addrptr,x)       ;
+.237c  20 b4 21   jsr $21b4                       JSR   Print1Byte        ;
+.237f  38         sec              SP_cmd44       SEC                     ;  checks if range done
+.2380  a5 3a      lda $3a                         LDA   Addrptr           ;
+.2382  e5 3c      sbc $3c                         SBC   Hexdigits         ;
+.2384  a5 3b      lda $3b                         LDA   Addrptr+1         ;
+.2386  e5 3d      sbc $3d                         SBC   Hexdigits+1       ;
+.2388  20 b2 23   jsr $23b2                       jsr   Inc_addrptr       ;
+.238b  90 b7      bcc $2344                       BCC   SP_cmd2           ; loop until range done
+.238d  a9 00      lda #$00         SP_brk         lda   #$00
+.238f  85 37      sta $37                         sta   Memchr            ; reset sec cmd code
+.2391  60         rts              SP_cmd5        RTS                     ; done or no digits to process
+.2392  84 31      sty $31          TXT_Cmd        sty   ysav              ;
+.2394  a0 00      ldy #$00                        ldy   #$00              ;
+.2396  20 2a 23   jsr $232a                       jsr   SP_cmd            ;
+.2399  a4 31      ldy $31                         ldy   ysav              ;
+.239b  60         rts                             RTS                     ;
+.239c  a2 00      ldx #$00         TXT_cmd1       ldx   #$00 
+.239e  a1 3a      lda ($3a,x)                     LDA   (Addrptr,x)       ;
+.23a0  29 7f      and #$7f                        AND   #$7F              ;
+.23a2  c9 7f      cmp #$7f                        CMP   #$7F              ;
+.23a4  f0 04      beq $23aa                       BEQ   TXT_Cmd2          ;
+.23a6  c9 20      cmp #$20                        CMP   #$20              ; " "
+.23a8  b0 02      bcs $23ac                       BCS   TXT_Cmd3          ;
+.23aa  a9 2e      lda #$2e         TXT_Cmd2       LDA   #$2E              ; "." use "." if not printable char
+.23ac  20 44 21   jsr $2144        TXT_Cmd3       JSR   OUTPUT            ;
+.23af  4c 7f 23   jmp $237f                       jmp   SP_cmd44          ;
+.23b2  e6 3a      inc $3a          Inc_addrptr    INC   Addrptr           ;  increments addrptr
+.23b4  d0 02      bne $23b8                       BNE   Inc_addr1         ;
+.23b6  e6 3b      inc $3b                         INC   Addrptr+1         ;
+.23b8  60         rts              Inc_addr1      RTS                     ;
+.23b9  a5 33      lda $33          Insert_cmd     lda   Linecnt           ;  "I" cmd code
+.23bb  f0 40      beq $23fd                       beq   Insert_3          ; abort if no . cmd entered
+.23bd  38         sec                             sec                     ;
+.23be  a5 3c      lda $3c                         lda   Hexdigits         ;
+.23c0  e5 3a      sbc $3a                         sbc   addrptr           ;
+.23c2  aa         tax                             tax                     ;
+.23c3  a5 3d      lda $3d                         lda   Hexdigits+1       ;
+.23c5  e5 3b      sbc $3b                         sbc   addrptr+1         ;
+.23c7  a8         tay                             tay                     ;
+.23c8  90 33      bcc $23fd                       bcc   Insert_3          ;
+.23ca  18         clc                             clc                     ;
+.23cb  8a         txa                             txa                     ;
+.23cc  65 3e      adc $3e                         adc   memptr            ;
+.23ce  85 3c      sta $3c                         sta   hexdigits         ;
+.23d0  98         tya                             tya                     ;
+.23d1  65 3f      adc $3f                         adc   memptr+1          ;
+.23d3  85 3d      sta $3d                         sta   hexdigits+1       ;
+.23d5  a2 00      ldx #$00         Insert_0       ldx   #$00
+.23d7  a1 3e      lda ($3e,x)                     LDA   (memptr,x)        ;
+.23d9  81 3c      sta ($3c,x)                     STA   (Hexdigits,x)     ;
+.23db  a9 ff      lda #$ff                        lda   #$FF              ;
+.23dd  c6 3c      dec $3c                         DEC   Hexdigits         ;  
+.23df  c5 3c      cmp $3c                         cmp   Hexdigits         ;  
+.23e1  d0 02      bne $23e5                       BNE   Insert_1          ;
+.23e3  c6 3d      dec $3d                         DEC   Hexdigits+1       ;
+.23e5  c6 3e      dec $3e          Insert_1       dec   Memptr            ;  
+.23e7  c5 3e      cmp $3e                         cmp   Memptr            ;
+.23e9  d0 02      bne $23ed                       bne   Insert_2          ;
+.23eb  c6 3f      dec $3f                         dec   Memptr+1          ;
+.23ed  38         sec              Insert_2       SEC                     ;  
+.23ee  a5 3e      lda $3e                         LDA   memptr            ;
+.23f0  e5 3a      sbc $3a                         SBC   Addrptr           ;
+.23f2  a5 3f      lda $3f                         LDA   memptr+1          ;
+.23f4  e5 3b      sbc $3b                         SBC   Addrptr+1         ;
+.23f6  90 05      bcc $23fd                       bcc   Insert_3          ;
+.23f8  20 41 21   jsr $2141                       jsr   Scan_Input        ; see if brk requested
+.23fb  90 d8      bcc $23d5                       bcc   Insert_0          ; if so, stop List
+.23fd  60         rts              Insert_3       RTS                     ;
+.23fe  a5 33      lda $33          Move_cmd       lda   Linecnt           ; *** any changes to this routine affect EEPROM_WR too!!!
+.2400  d0 0d      bne $240f                       bne   Move_cmd3         ; abort if no . cmd was used
+.2402  60         rts              Move_brk       RTS                     ;
+.2403  e6 3a      inc $3a          Move_cmd1      INC   Addrptr           ;  increments addrptr
+.2405  d0 02      bne $2409                       BNE   Move_cmd2         ;
+.2407  e6 3b      inc $3b                         INC   Addrptr+1         ;
+.2409  e6 3c      inc $3c          Move_cmd2      inc   Hexdigits         ;  "M" cmd code
+.240b  d0 02      bne $240f                       bne   Move_cmd3         ;
+.240d  e6 3d      inc $3d                         inc   Hexdigits+1       ;
+.240f  38         sec              Move_cmd3      SEC                     ;  checks if range done
+.2410  a5 3e      lda $3e                         LDA   Memptr            ;
+.2412  e5 3a      sbc $3a                         SBC   Addrptr           ;
+.2414  a5 3f      lda $3f                         LDA   Memptr+1          ;
+.2416  e5 3b      sbc $3b                         SBC   Addrptr+1         ;
+.2418  90 e8      bcc $2402                       BCC   Move_brk          ;  exit if range done
+.241a  20 41 21   jsr $2141                       jsr   Scan_Input        ; see if brk requested
+.241d  b0 e3      bcs $2402                       bcs   Move_brk          ; 
+.241f  a2 00      ldx #$00                        ldx   #$00
+.2421  a1 3a      lda ($3a,x)                     LDA   (Addrptr,x)       ;  Moves one byte
+.2423  81 3c      sta ($3c,x)                     STA   (Hexdigits,x)     ;
+.2425  4c 03 24   jmp $2403                       jmp   Move_cmd1         ; (zapped after move from eeprom_wr)
+.2428  a6 3c      ldx $3c          Dest_cmd       LDX   Hexdigits         ;  ">" cmd code
+.242a  a5 3d      lda $3d                         LDA   Hexdigits+1       ;
+.242c  86 3e      stx $3e                         STX   Memptr            ;  move address to memptr
+.242e  85 3f      sta $3f                         STA   Memptr+1          ;
+.2430  60         rts                             RTS                     ;  
+
+>2431  30 31 32 33 34 35 36 37 38 39 41 42 43 44 45 46  Hexdigdata     .byte "0123456789ABCDEF";hex char table 
+>2441  0d                          CmdAscii       .byte $0D               ; 0 enter    cmd codes
+>2442  20                                         .byte $20               ; 1 SPACE
+>2443  2e                                         .byte $2E               ; 2 .
+>2444  3a                                         .byte $3A               ; 3 :
+>2445  3e                                         .byte $3E               ; 4 >  
+>2446  47                                         .byte $47               ; 5 g - Go
+>2447  49                                         .byte $49               ; 6 i - Insert
+>2448  4d                                         .byte $4D               ; 7 m - Move
+>2449  51                                         .byte $51               ; 8 q - Query memory (text dump)
+>244a  52                                         .byte $52               ; 9 r - Registers
+>244b  56                                         .byte $56               ; a v - Version
+>244c  18 23                       Cmdjmptbl      .word CR_cmd-1            ; 0  enter   cmd jmp table
+>244e  29 23                                      .word SP_cmd-1            ; 1   space
+>2450  0d 23                                      .word DOT_cmd-1           ; 2    .
+>2452  0d 23                                      .word DOT_cmd-1           ; 3    :
+>2454  27 24                                      .word Dest_cmd-1          ; 4    >  
+>2456  01 23                                      .word Excute_cmd-1        ; 5    g
+>2458  b8 23                                      .word Insert_Cmd-1        ; 6    i
+>245a  fd 23                                      .word Move_cmd-1          ; 7    m
+>245c  91 23                                      .word TXT_cmd-1           ; 8    q
+>245e  6a 21                                      .word Printreg-1          ; 9    r
+>2460  f0 22                                      .word Version-1           ; a    v
+>2462  00                          Cmdseccode     .byte $00               ; 0   enter       secondary command table
+>2463  ff                                         .byte $FF               ; 1   sp
+>2464  01                                         .byte $01               ; 2   .
+>2465  02                                         .byte $02               ; 3   :
+>2466  00                                         .byte $00               ; 4   > 
+>2467  00                                         .byte $00               ; 5   g
+>2468  00                                         .byte $00               ; 6   i
+>2469  00                                         .byte $00               ; 7   m
+>246a  00                                         .byte $00               ; 8   q
+>246b  00                                         .byte $00               ; 9   r
+>246c  00                                         .byte $00               ; a   v
+>246d  36 35 43 30 32 20 4d 6f 6e 69 74 6f 72 20 76 35 2e 31 2e 31 20 28 37 2d 34 2d 31 33 29 20 52 65 61 64 79  Porttxt        .byte "65C02 Monitor v5.1.1 (7-4-13) Ready"
+>2490  0d 0a                                      .byte  $0d, $0a
+>2492  00                                         .byte $00
+
+--- end of code ---
