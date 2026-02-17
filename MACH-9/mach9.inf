@@ -1,12 +1,22 @@
 file Z26_M9IB.BIN 0xB000
-*file Z25_M9IC.BIN 0xC000
-*file Z24_M9ID.BIN 0xD000
-*file Z23_M9IE.BIN 0xE000
+file Z25_M9IC.BIN 0xC000
+file Z24_M9ID.BIN 0xD000
+file Z23_M9IE.BIN 0xE000
 file Z22_M9IF.BIN 0xF000
 option out mach9.asm
 
+const 0xe9a4-0xed61 * assembler
+const 0xed62-0xeff9 * unknown - doesnt look like code
+const 0xefaa-0xefd9   * command table?
+
+label 0xd000 ROM_D
+label 0xb000 ROM_B
+
 LABEL 0XF000 RESET
-rmb 0xefda-0xefff
+rmb 0xefda-0xeffe
+const 0xefff
+word 0xffd8-0xfff3
+
 cvec jump_TODO 0xA400
 cvec jump_SWI3 0xA402
 cvec jump_SWI2 0xA404
@@ -69,16 +79,48 @@ label 0xAC01 AIM_DISPLAY_CRA
 label 0xAC02 AIM_DISPLAY_RB    
 label 0xAC03 AIM_DISPLAY_CRB 
 
-label 0xff78 msg_tbq
+const 0xf024
+const 0xfaed
+label 0xfaee zfaed
+const 0xfaf5
+label 0xfaf6 zfaf6
+const 0xfb5d
+const 0xfe40
+const 0xff3e
+label 0xff3f zff3f
+const 0xff79
+
+word 0xffa2-0xffbb
+label 0xfea3 tfea3
+label 0xfeb0 tfeb0
+label 0xfeb6 tfeb6
+label 0xfebb tbebb
+label 0xf01d tf01d
+label 0xf04d tf04d
+label 0xfec0 tfec0
+label 0xfed5 tfed5
+label 0xff26 tff26
+label 0xfedc tfedc
+label 0xfee0 tfee0
+label 0xfe8a tfe8a
+label 0xff3f tff3f
+
+
+
+label 0xff75 msg_print
+;label 0xff78 msg_tbq
 label 0xff7a msg_oef
 label 0xff7e msg_prd
 label 0xff8b msg_bii
 label 0xff95 msg_bix
 label 0xff9a msg_bsw
 
-const 0xff61-0xffa1
+const 0xff61-0xff74
+const 0xff7A-0xffa1
+const 0xfcd2-0xfce3
 
 word 0xf661-0xf6fc
+
 label 0xf6fd jmp01
 label 0xf702 jmp02
 label 0xf709 jmp03
@@ -104,7 +146,7 @@ label 0xF90F jmp21
 label 0xF94E jmp22
 label 0xF958 jmp23
 label 0xF96F jmp24
-label 0xB009 jmp25
+label 0xB009 ROM_B
 label 0xF987 jmp26
 label 0xF9BE jmp27
 label 0xF9E7 jmp28
@@ -122,7 +164,7 @@ label 0xFC3F jmp39
 label 0xFC60 jmp40
 label 0xFC67 jmp41
 label 0xFC6F jmp42
-label 0xM0000 jmp43
+label 0x0000 z0000
 label 0xFC7B jmp44
 label 0xFC87 jmp45
 label 0xFCA5 jmp46
@@ -132,7 +174,7 @@ label 0xFD06 jmp49
 label 0xFD19 jmp50
 label 0xFD21 jmp51
 label 0xFD4C jmp52
-label 0xZFD5E jmp53
+label 0xFD5E jmp53
 label 0xFDA1 jmp54
 label 0xFDA6 jmp55
 label 0xFDE0 jmp56
