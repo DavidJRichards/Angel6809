@@ -1,0 +1,144 @@
+file Z26_M9IB.BIN 0xB000
+*file Z25_M9IC.BIN 0xC000
+*file Z24_M9ID.BIN 0xD000
+*file Z23_M9IE.BIN 0xE000
+file Z22_M9IF.BIN 0xF000
+option out mach9.asm
+
+LABEL 0XF000 RESET
+rmb 0xefda-0xefff
+cvec jump_TODO 0xA400
+cvec jump_SWI3 0xA402
+cvec jump_SWI2 0xA404
+cvec jump_FIRQ 0xA406
+cvec jump_IRQ 0xA408
+cvec jump_SWI 0xA40A
+cvec jump_NMI 0xA40C
+
+CVEC 0XA400-0XA40F
+   
+label 0xA000 AIM_USER_DRB
+label 0xA001 AIM_USER_DRAH
+label 0xA002 AIM_USER_DDRB
+label 0xA003 AIM_USER_DDRA
+label 0xA004 AIM_USER_T1L
+label 0xA005 AIM_USER_T1CH
+label 0xA006 AIM_USER_T1LL
+label 0xA007 AIM_USER_T1LH
+label 0xA008 AIM_USER_T2L
+label 0xA009 AIM_USER_T2H
+label 0xA00A AIM_USER_SR
+label 0xA00B AIM_USER_ACR
+label 0xA00C AIM_USER_PCR
+label 0xA00D AIM_USER_IFR
+label 0xA00E AIM_USER_IER
+label 0xA00F AIM_USER_DRA
+    
+label 0xA400 AIM_RESTART
+label 0xA402 AIM_SWI3
+label 0xa404 AIM_SWI2
+label 0xa406 AIM_FIRQ
+label 0xa408 AIM_IRQ
+label 0xa40a AIM_SWI
+label 0xa40C AIM_NMI       
+
+label 0xA480 AIM_KEYBOARD_DRA2   
+label 0xA481 AIM_KEYBOARD_DDRA2   
+label 0xA482 AIM_KEYBOARD_DRB2   
+label 0xA483 AIM_KEYBOARD_DDRB2   
+
+label 0xA800 AIM_VIA_DRB
+label 0xA801 AIM_VIA_DRAH
+label 0xA802 AIM_VIA_DDRB
+label 0xA803 AIM_VIA_DDRA
+label 0xA804 AIM_VIA_T1L
+label 0xA805 AIM_VIA_T1CH
+label 0xA806 AIM_VIA_T1LL
+label 0xA807 AIM_VIA_T1LH
+label 0xA808 AIM_VIA_T2L
+label 0xA809 AIM_VIA_T2H
+label 0xA80A AIM_VIA_SR
+label 0xA80B AIM_VIA_ACR
+label 0xA80C AIM_VIA_PCR
+label 0xA80D AIM_VIA_IFR
+label 0xA80E AIM_VIA_IER
+label 0xA80F AIM_VIA_DRA
+
+label 0xAC00 AIM_DISPLAY_RA    
+label 0xAC01 AIM_DISPLAY_CRA    
+label 0xAC02 AIM_DISPLAY_RB    
+label 0xAC03 AIM_DISPLAY_CRB 
+
+label 0xff78 msg_tbq
+label 0xff7a msg_oef
+label 0xff7e msg_prd
+label 0xff8b msg_bii
+label 0xff95 msg_bix
+label 0xff9a msg_bsw
+
+const 0xff61-0xffa1
+
+word 0xf661-0xf6fc
+label 0xf6fd jmp01
+label 0xf702 jmp02
+label 0xf709 jmp03
+label 0xf733 jmp04
+label 0xf73a jmp05
+label 0xf741 jmp06
+label 0xf746 jmp07
+label 0xf74c jmp08
+
+label 0xF78A jmp09
+label 0xF7F2 jmp10
+label 0xF7FA jmp11
+label 0xF7FD jmp12
+label 0xF807 jmp13
+label 0xF83E jmp14
+label 0xF85C jmp15
+label 0xF88C jmp16
+label 0xF8A8 jmp17
+label 0xF8C0 jmp18
+label 0xF8DC jmp19
+label 0xF903 jmp20
+label 0xF90F jmp21
+label 0xF94E jmp22
+label 0xF958 jmp23
+label 0xF96F jmp24
+label 0xB009 jmp25
+label 0xF987 jmp26
+label 0xF9BE jmp27
+label 0xF9E7 jmp28
+label 0xFB2F jmp29
+label 0xFB7E jmp30
+label 0xFB90 jmp31
+label 0xFBDE jmp32
+label 0xFBE1 jmp33
+label 0xFBFA jmp34
+label 0xFC19 jmp35
+label 0xFC21 jmp36
+label 0xFC28 jmp37
+label 0xFC30 jmp38
+label 0xFC3F jmp39
+label 0xFC60 jmp40
+label 0xFC67 jmp41
+label 0xFC6F jmp42
+label 0xM0000 jmp43
+label 0xFC7B jmp44
+label 0xFC87 jmp45
+label 0xFCA5 jmp46
+label 0xFCE4 jmp47
+label 0xFCF6 jmp48
+label 0xFD06 jmp49
+label 0xFD19 jmp50
+label 0xFD21 jmp51
+label 0xFD4C jmp52
+label 0xZFD5E jmp53
+label 0xFDA1 jmp54
+label 0xFDA6 jmp55
+label 0xFDE0 jmp56
+label 0xFDF5 jmp57
+label 0xFE26 jmp58
+label 0xFE36 jmp59
+label 0xFE48 jmp60
+
+
