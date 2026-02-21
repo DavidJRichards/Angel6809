@@ -6,7 +6,16 @@ file Z22_M9IF.BIN 0xF000
 option out mach9.asm
 
 const 0xe9a4-0xed61 * assembler
-const 0xed62-0xeff9 * unknown - doesnt look like code
+const 0xed62-0xee21 * unknown - doesnt look like code
+
+const 0xee24 ; swi 0
+label 0xee25 zee25
+
+const 0xee4a ; swi 0
+label 0xee4b zee4b
+
+label 0xef9a kb_data
+const 0xef9a-0xeff9 * keyboard decoder lookup
 const 0xefaa-0xefd9   * command table?
 
 label 0xd000 ROM_D
@@ -90,25 +99,32 @@ const 0xff3e
 label 0xff3f zff3f
 const 0xff79
 
-word 0xffa2-0xffbb
-label 0xfea3 tfea3
-label 0xfeb0 tfeb0
-label 0xfeb6 tfeb6
-label 0xfebb tbebb
-label 0xf01d tf01d
-label 0xf04d tf04d
-label 0xfec0 tfec0
-label 0xfed5 tfed5
-label 0xff26 tff26
-label 0xfedc tfedc
-label 0xfee0 tfee0
-label 0xfe8a tfe8a
-label 0xff3f tff3f
+label 0xfe59 nSWI
+label 0xff00 nNMI
+label 0xFFBC nTODO
+label 0xffa2 tSWI
+
+; SWI handling functions for SWI codes 0 to 12
+word 0xffa2-0xffbb      ; SWI vactor
+label 0xfea3 t0_fea3    ; conin byte
+label 0xfeb0 t1_feb0    ; conout character
+label 0xfeb6 t2_feb6    ; conout word
+label 0xfebb t3_bebb    ; conout byte
+label 0xf01d t4_f01d
+label 0xf04d t5_f04d
+label 0xfec0 t6_fec0
+label 0xfed5 t7_fed5
+label 0xff26 t8_ff26
+label 0xfedc t9_fedc
+label 0xfee0 ta_fee0
+label 0xfe8a tb_fe8a
+label 0xff3f tc_ff3f
 
 
-
+; system message printer
 label 0xff75 msg_print
 ;label 0xff78 msg_tbq
+; system messages, null terminated
 label 0xff7a msg_oef
 label 0xff7e msg_prd
 label 0xff8b msg_bii
@@ -119,7 +135,14 @@ const 0xff61-0xff74
 const 0xff7A-0xffa1
 const 0xfcd2-0xfce3
 
+
+; ascii command table
+label 0xEF9A cmdtab-EF9A
+
+
+; big jump table
 word 0xf661-0xf6fc
+label 0xf661 jmptab-F661
 
 label 0xf6fd jmp01
 label 0xf702 jmp02

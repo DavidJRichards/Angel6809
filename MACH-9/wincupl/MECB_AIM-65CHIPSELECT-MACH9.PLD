@@ -1,0 +1,58 @@
+//name            MECB_AIM65-multics-22v10-v3;
+//Device          g22v10;
+name            MECB_AIM65-multics-20v8-v3;
+Device          g20v8;
+Partno          U1;
+Date            05/2025;
+Revision        01;
+Designer        David;
+Company         djrm;
+Assembly        None;
+Location        None;
+
+/*
+ *
+ * Inputs: Inputs were assigned based on the ECB bus pin sequence (for ease of PCB routing).
+ * Active low pins are inverted at the pin so all signals can be consistently treated as positive logic.
+ *
+ */
+
+Pin  1 	= clk;
+Pin  2        = RNW;
+Pin  3        = a0;
+
+// Pin 13     = OE;
+Pin   [14, 11, 10, 9, 8, 7, 6, 5, 4, 22,23,15] = [a15..a4];
+field memoffset = [a15..a4];
+
+/*
+ *
+ * Outputs: Define outputs
+ * Active low pins are inverted at the pin so all signals can be consistently treated as positive logic.
+ *
+ */
+
+//  22   a5
+pin 21 = !cs4; // red
+Pin 20 = !cs5; // green
+Pin 19 = !aim65io;
+Pin 18 = !cs3; // orange
+pin 17 = !cs0; // yellow 
+Pin 16 = !cs6;   
+//  15   a4
+
+/*
+ *
+ * Logic: AIM-65 recreation - I/O Address Allocations
+ *
+ */
+//cs1  =       memoffset:[A400..A47f]; // 6532 memory
+//cs2  =       memoffset:[A480..A49f]; // 6532 keyboard
+//cs6  = clk & memoffset:[A200..A203]; // 6551
+
+cs0  =       memoffset:[a000..a00F]; // 6522 user
+cs3  =       memoffset:[A400..A49f]; // 6532 CS (memory & keyboard)
+cs4  =       memoffset:[A800..A80f]; // 6522 via
+cs5  =       memoffset:[AC00..AC03]; // 6520 display
+aim65io  =   cs0 # cs3 # cs4 # cs5;
+
