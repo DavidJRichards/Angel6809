@@ -14,8 +14,9 @@ label 0xee25 zee25
 const 0xee4a ; swi 0
 label 0xee4b zee4b
 
-label 0xef9a kb_data
 const 0xef9a-0xeff9 * keyboard decoder lookup
+label 0xef9a kb_data
+
 const 0xefaa-0xefd9   * command table?
 
 label 0xd000 ROM_D
@@ -134,10 +135,6 @@ label 0xff9a msg_bsw
 const 0xff61-0xff74
 const 0xff7A-0xffa1
 const 0xfcd2-0xfce3
-
-
-; ascii command table
-label 0xEF9A cmdtab-EF9A
 
 
 ; big jump table
