@@ -1,26 +1,35 @@
-file Z26_M9IB.BIN 0xB000
-file Z25_M9IC.BIN 0xC000
-file Z24_M9ID.BIN 0xD000
+*file Z26_M9IB.BIN 0xB000
+*file Z25_M9IC.BIN 0xC000
+*file Z24_M9ID.BIN 0xD000
 file Z23_M9IE.BIN 0xE000
 file Z22_M9IF.BIN 0xF000
 option out mach9.asm
 
+const 0xe000-0xe9a8 * doesnt look like code
 const 0xe9a4-0xed61 * assembler
 const 0xed62-0xee21 * unknown - doesnt look like code
+label 0xe9a9 asm_e9a9
+;label 0xe9fa asm_e9fa
 
-const 0xee24 ; swi 0
-label 0xee25 zee25
+const 0xee23-0xee8e
+;const 0xee24 ; swi 0
+;label 0xee25 zee25
 
-const 0xee4a ; swi 0
-label 0xee4b zee4b
+;const 0xee4a ; swi 0
+;label 0xee4b zee4b
 
+label 0xF2C6 kbfn_f2c6
+label 0xf055 kbfn_f055
+label 0xf1ac kbfn_f1ac
 const 0xef9a-0xeff9 * keyboard decoder lookup
 label 0xef9a kb_data
 
 const 0xefaa-0xefd9   * command table?
 
-label 0xd000 ROM_D
-label 0xb000 ROM_B
+label 0xd000 ROM_D000
+label 0xb000 ROM_B000
+label 0xb006 ROM_B006
+label 0xb009 ROM_B009
 
 LABEL 0XF000 RESET
 rmb 0xefda-0xeffe
@@ -105,17 +114,36 @@ label 0xff00 nNMI
 label 0xFFBC nTODO
 label 0xffa2 tSWI
 
+word 0xfaaa-0xfab9
+label 0xfae9 zfae9
+label 0xfaf2 zfaf2
+label 0xfacf zfacf
+label 0xfa54 zfa54
+label 0xfafa zfafa
+
+label 0xf071 conout_f071
+
+word 0xfb3c-0xfb4b
+label 0xfb3c dtab_fb3c
+label 0xFB5B jfb5b
+label 0xFB60 jfb60
+label 0xFB64 jfb64
+label 0xFB5E jfb5e
+label 0xFB72 jfb72
+label 0xFB5E jfb5e
+
+
 ; SWI handling functions for SWI codes 0 to 12
 word 0xffa2-0xffbb      ; SWI vactor
-label 0xfea3 t0_fea3    ; conin byte
-label 0xfeb0 t1_feb0    ; conout character
-label 0xfeb6 t2_feb6    ; conout word
-label 0xfebb t3_bebb    ; conout byte
+label 0xfea3 conin_t0_fea3    ; conin byte
+label 0xfeb0 conout_t1_feb0    ; conout character
+label 0xfeb6 conout_t2_feb6    ; conout word
+label 0xfebb conout_t3_bebb    ; conout byte
 label 0xf01d t4_f01d
 label 0xf04d t5_f04d
 label 0xfec0 t6_fec0
 label 0xfed5 t7_fed5
-label 0xff26 t8_ff26
+label 0xff26 abort_t8_ff26
 label 0xfedc t9_fedc
 label 0xfee0 ta_fee0
 label 0xfe8a tb_fe8a
@@ -126,7 +154,7 @@ label 0xff3f tc_ff3f
 label 0xff75 msg_print
 ;label 0xff78 msg_tbq
 ; system messages, null terminated
-label 0xff7a msg_oef
+label 0xff7a msg_eof
 label 0xff7e msg_prd
 label 0xff8b msg_bii
 label 0xff95 msg_bix
@@ -136,7 +164,21 @@ const 0xff61-0xff74
 const 0xff7A-0xffa1
 const 0xfcd2-0xfce3
 
+label 0xf774 jtab_f774
+word 0xf774-f789
+label 0xf792 jf792
+label 0xf79e jf79e
+label 0xf7a6 jf7a6
+label 0xf7ad jf7ad
+label 0xf7b0 jF7b0
+label 0xF7B3 jf7b3
+label 0xF7B6 jf7b6
+label 0xF7B9 jf7b9
+label 0xF7CA jf7ca
+label 0xF7DA jf7da
+label 0xF7ED jf7ed
 
+label 0xF656 jmpfn_f6656
 ; big jump table
 word 0xf661-0xf6fc
 label 0xf661 jmptab-F661
@@ -166,7 +208,7 @@ label 0xF90F jmp21
 label 0xF94E jmp22
 label 0xF958 jmp23
 label 0xF96F jmp24
-label 0xB009 ROM_B
+;label 0xB009 ROM_B
 label 0xF987 jmp26
 label 0xF9BE jmp27
 label 0xF9E7 jmp28
