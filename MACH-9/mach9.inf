@@ -26,10 +26,9 @@ label 0xef9a kb_data
 
 const 0xefaa-0xefd9   * command table?
 
-label 0xd000 ROM_D000
-label 0xb000 ROM_B000
-label 0xb006 ROM_B006
-label 0xb009 ROM_B009
+label 0xd000 SET_T1LL_A
+LABEL 0XA001 SET_T1LL_B
+LABEL 0XFEC5 CMP_T2L_
 
 LABEL 0XF000 RESET
 rmb 0xefda-0xeffe
@@ -46,12 +45,14 @@ cvec jump_NMI 0xA40C
 
 CVEC 0XA400-0XA40F
 
+label 0xa3f1 ss_jump_vector_0xa3f1
 label 0xa410 input_jump_0xa410
 label 0xa412 output_jump_0xa412 
+label 0xa414 kb_jump_vector_0xa414
 label 0xa420 userSWI_jump_0xa420
    
 label 0xA000 AIM_USER_DRB
-label 0xA001 AIM_USER_DRAH
+;label 0xA001 AIM_USER_DRAH
 label 0xA002 AIM_USER_DDRB
 label 0xA003 AIM_USER_DDRA
 label 0xA004 AIM_USER_T1L
@@ -144,10 +145,26 @@ label 0xFB5E jfb5e
 label 0xFB4C output_f4bc
 ; SWI handling functions for SWI codes 0 to 12
 word 0xffa2-0xffbb      ; SWI vactor
+
+prepcomm 0XFe59 -- SWI sub functions --
+prepcomm 0XFe59 -- 0 conin fea3  --
+prepcomm 0XFe59 -- 1 conout character feb0  --
+prepcomm 0XFe59 -- 2 conout feb6 --
+prepcomm 0XFe59 -- 3 conout febb --
+prepcomm 0XFe59 -- 4 f01d  --
+prepcomm 0XFe59 -- 5 f04d  --
+prepcomm 0XFe59 -- 6 fec0  --
+prepcomm 0XFe59 -- 7 fed5  --
+prepcomm 0XFe59 -- 8 abort ff26  --
+prepcomm 0XFe59 -- 9 fedc  --
+prepcomm 0XFe59 -- A fee0  --
+prepcomm 0XFe59 -- B fe8a  --
+prepcomm 0XFe59 -- C ff3f  --
+
 label 0xfea3 conin_t0_fea3    ; conin byte
 label 0xfeb0 conout_t1_feb0    ; conout character
 label 0xfeb6 conout_t2_feb6    ; conout word
-label 0xfebb conout_t3_bebb    ; conout byte
+label 0xfebb conout_t3_febb    ; conout byte
 label 0xf01d t4_f01d
 label 0xf04d t5_f04d
 label 0xfec0 t6_fec0
@@ -259,7 +276,62 @@ label 0xFE26 jmp58
 label 0xFE36 jmp59
 label 0xFE48 jmp60
 
+lcomment 0xf1ce cludge needed to make f1ce valid branch target above ????
+lcomment 0xf1b8 mask to CHCK CLMN 5,6,7
+lcomment 0xf1dd CTRL OR SHIFT ,SO WHICH ONE?
+const 0xf1ce
+lcomment 0xf23f 0x5C print line command ?
+label 0xf2b9 kb_debounce_f2b9
+label 0xf2bc kb_delay_f2bc
+lcomment 0xf3e4 printer chip at address 0xA8xx
+
+prepcomm 0xf0ee -- display data in ,S at display addr index B
+prepcomm 0Xf0ee --  CONVERT B INTO REAL ADDR FOR DISPLAY --
+prepcomm 0Xf0ee --  AND OUTPUT IT  PB=DATA ; PA=W,CE ,A0 A1 (6520) --
+lcomment 0xf0f0 display chip at address 0xACxx
+lcomment 0xf108 output to RA (W,CE ,A0 A1 )
+lcomment 0xf112 chr to upper case
+lcomment 0xf11a output to RA (W,CE ,A0 A1 )
+lcomment 0xf11e output to RA (W,CE ,A0 A1 )
+lcomment 0xf121 output to RA (W,CE ,A0 A1 )
+lcomment 0xf114 output to RB (data)
+
+label 0xf0ee write_display_f0ee
+label 0xa460 buffer_a460
+label 0xf01d op_crlf_f01d
+label 0xf04d op_spc_f04d
+label 0xf09f kb_chk_esc_F20F
+label f00c op_ntmsg_inx_f00c
+label 0xa419 disp_idx_A419
+label 0xa418 display_idx_a418
+label 0xf378 spc-to-buf-end-f378
+prepcomm 0Xf384 -- need to decode purpose of this too--
+label 0xf384 unknown_f384
+
+
+prepcomm 0XF125 -- write data byte --
+label 0xf125 ser_tx_byte_f125
+prepcomm 0XF160 -- wait for start bit --
+prepcomm 0XF18f -- delay full bit time --
+prepcomm 0XF1a3 -- delay half bit time --
+label 0xf18f dly_bit_f18f
+label 0xf1a3 dly_half_f1a3
+
+
+prepcomm 0Xf2c6 ------------- keyboard function code begin ---------------
+prepcomm 0XF314 --serial sub function begin --
+prepcomm 0XF342 --function begin --
+prepcomm 0XF3cc --function begin --
+prepcomm 0XF3e2 --function begin --
+prepcomm 0XF422 --function begin --
+prepcomm 0XF458 --function begin --
+prepcomm 0XF4a4 ------------- section of code begin ---------------
+prepcomm 0XF656 ------------- Function despatch ---------------
+prepcomm 0XFE48 ------------- VECTORS AND JUMPS ---------------
+
 const 0xf99e-0xf9a5 ; bit values
 label 0xf99e bivals_f99e
+
+label 0xfe78 ReturnA_fe78
 
 
