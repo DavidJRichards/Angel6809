@@ -31,8 +31,8 @@ M007B   EQU     $007B
 M007C   EQU     $007C
 M007D   EQU     $007D
 M007F   EQU     $007F
-M0080   EQU     $0080
-M0082   EQU     $0082
+DRA2    EQU     $0080
+DRB2    EQU     $0082
 M008D   EQU     $008D
 M008F   EQU     $008F
 M0091   EQU     $0091
@@ -106,6 +106,7 @@ AIM_VIA_IFR EQU     $A80D
 MON_STKTOP EQU     $AC00
 MB000   EQU     $B000
 ZB006   EQU     $B006
+MC610   EQU     $C610
 SET_T1LL_A EQU     $D000
 
 ;****************************************************
@@ -936,7 +937,7 @@ ZF063   BSR     ZF08E                    ;F063: 8D 29          '.)'
         BNE     ZF06C                    ;F065: 26 05          '&.'
         LBSR    ZF160                    ;F067: 17 00 F6       '...'
         BRA     ZF06F                    ;F06A: 20 03          ' .'
-ZF06C   LBSR    kbfn_f1ac                ;F06C: 17 01 3D       '..='
+ZF06C   LBSR    GETKEY_f1ac              ;F06C: 17 01 3D       '..='
 ZF06F   PULS    PC,B                     ;F06F: 35 84          '5.'
 conout_f071 BSR     ZF08E                    ;F071: 8D 1B          '..'
         BNE     ZF07A                    ;F073: 26 05          '&.'
@@ -1102,37 +1103,43 @@ dly_half_f1a3 PSHD                             ;F1A3: 34 06          '4.'
         LDD     MA41A                    ;F1A5: FC A4 1A       '...'
         LSRD                             ;F1A8: 44 56          'DV'
         BRA     ZF194                    ;F1AA: 20 E8          ' .'
-kbfn_f1ac PSHS    Y,X,DP,B,CC              ;F1AC: 34 3D          '4='
+; ;X=CTRL OR SHIFT ,OTHERWISE X=0
+; ;FROM KB Y=ROW ,STBKEY=COLUMNS (STROBE)
+; ;GET A CHAR FROM KB SUBROUTINE
+GETKEY_f1ac PSHS    Y,X,DP,B,CC              ;F1AC: 34 3D          '4='
         LDA     #$A4                     ;F1AE: 86 A4          '..'
         TFR     A,DP                     ;F1B0: 1F 8B          '..'
-ZF1B2   LBSR    ZF28A                    ;F1B2: 17 00 D5       '...'
-ZF1B5   LBSR    kb_debounce_f2b9         ;F1B5: 17 01 01       '...'
+getkey_f1b2 LBSR    ROONEK_f28a              ;F1B2: 17 00 D5       '...'
+getkey_f1b5 LBSR    DEBKEY_f2b9              ;F1B5: 17 01 01       '...'
+; ;CTRL OR SHIFT ?
         LDA     #$8F                     ;F1B8: 86 8F          '..'    mask to CHCK CLMN 5,6,7
-        STA     M0080                    ;F1BA: 97 80          '..'
-        LDA     M0082                    ;F1BC: 96 82          '..'
+        STA     DRA2                     ;F1BA: 97 80          '..'
+        LDA     DRB2                     ;F1BC: 96 82          '..'
         LSRA                             ;F1BE: 44             'D'
         BCS     ZF1D5                    ;F1BF: 25 14          '%.'
         LDB     #$EF                     ;F1C1: C6 EF          '..'
-        STB     M0080                    ;F1C3: D7 80          '..'
+        STB     DRA2                     ;F1C3: D7 80          '..'
         CLRA                             ;F1C5: 4F             'O'
-        LDB     M0082                    ;F1C6: D6 82          '..'
+        LDB     DRB2                     ;F1C6: D6 82          '..'
         ANDB    #$01                     ;F1C8: C4 01          '..'
         BEQ     ZF1CF                    ;F1CA: 27 03          ''.'
         LDB     #$40                     ;F1CC: C6 40          '.@'
-        FCB     $8C                      ;F1CE: 8C             '.'     cludge needed to make f1ce valid branch target above ????
-ZF1CF   LDB     #$10                     ;F1CF: C6 10          '..'
+        CMPX    #MC610                   ;F1CE: 8C C6 10       '...'   cludge needed to make f1ce valid branch target above ????
+; ZF1CF   LDB     #$10                     ;F1CF: C6 10          '..'
         TFR     D,X                      ;F1D1: 1F 01          '..'
         INC     M0022                    ;F1D3: 0C 22          '."'
-ZF1D5   LBSR    ZF299                    ;F1D5: 17 00 C1       '...'
+; ;NOW GET ANY KEY
+ZF1D5   LBSR    ONEKEY_f299              ;F1D5: 17 00 C1       '...'
         DECB                             ;F1D8: 5A             'Z'
         BNE     ZF1E3                    ;F1D9: 26 08          '&.'
         LDA     M0023                    ;F1DB: 96 23          '.#'
-        CMPA    #$F7                     ;F1DD: 81 F7          '..'    CTRL OR SHIFT ,SO WHICH ONE?
+        CMPA    #$F7                     ;F1DD: 81 F7          '..'    IF CLMN 5,6,7,8 TO IT AGAIN
         BCC     ZF1E5                    ;F1DF: 24 04          '$.'
-        BRA     ZF1B5                    ;F1E1: 20 D2          ' .'
-ZF1E3   BMI     ZF1B5                    ;F1E3: 2B D0          '+.'
+        BRA     getkey_f1b5              ;F1E1: 20 D2          ' .'
+ZF1E3   BMI     getkey_f1b5              ;F1E3: 2B D0          '+.'
+; ;WE HAVE A KEY ,DECODE IT
 ZF1E5   PSHB                             ;F1E5: 34 04          '4.'
-        LBSR    kb_delay_f2bc            ;F1E7: 17 00 D2       '...'
+        LBSR    DEBK1_f2bc               ;F1E7: 17 00 D2       '...'
         PULB                             ;F1EA: 35 04          '5.'
         LDA     #$08                     ;F1EC: 86 08          '..'
         MUL                              ;F1EE: 3D             '='
@@ -1173,12 +1180,12 @@ ZF231   ORA     #$20                     ;F231: 8A 20          '. '
 ZF233   CMPA    #$60                     ;F233: 81 60          '.`'
         BNE     ZF23F                    ;F235: 26 08          '&.'
         CLR     M0077                    ;F237: 0F 77          '.w'
-        LBSR    ZF38E                    ;F239: 17 01 52       '..R'
-        LBRA    ZF1B2                    ;F23C: 16 FF 73       '..s'
+        LBSR    adv_paper_f38e           ;F239: 17 01 52       '..R'
+        LBRA    getkey_f1b2              ;F23C: 16 FF 73       '..s'
 ZF23F   CMPA    #$5C                     ;F23F: 81 5C          '.\'    0x5C print line command ?
         BNE     ZF249                    ;F241: 26 06          '&.'
-        LBSR    ZF389                    ;F243: 17 01 43       '..C'
-        LBRA    ZF1B2                    ;F246: 16 FF 69       '..i'
+        LBSR    printbuf_f389            ;F243: 17 01 43       '..C'
+        LBRA    getkey_f1b2              ;F246: 16 FF 69       '..i'
 ZF249   BITB    #$10                     ;F249: C5 10          '..'
         BEQ     ZF251                    ;F24B: 27 04          ''.'
         CMPA    #$2E                     ;F24D: 81 2E          '..'
@@ -1209,23 +1216,27 @@ ZF27B   LDY     #MA424                   ;F27B: 10 8E A4 24    '...$'
         LBSR    ZF0C9                    ;F280: 17 FE 46       '..F'
         BRA     ZF285                    ;F283: 20 00          ' .'
 ZF285   PULS    Y,D                      ;F285: 35 26          '5&'
-        LBRA    ZF1B2                    ;F287: 16 FF 28       '..('
-ZF28A   LDA     M0082                    ;F28A: 96 82          '..'
+        LBRA    getkey_f1b2              ;F287: 16 FF 28       '..('
+; ;wait if last ley still down
+ROONEK_f28a LDA     DRB2                     ;F28A: 96 82          '..'
         CMPA    #$FF                     ;F28C: 81 FF          '..'
         BEQ     ZF297                    ;F28E: 27 07          ''.'
         ORA     M007F                    ;F290: 9A 7F          '..'
         COMA                             ;F292: 43             'C'
-        BNE     ZF28A                    ;F293: 26 F5          '&.'
-        BSR     kb_debounce_f2b9         ;F295: 8D 22          '."'
+        BNE     ROONEK_f28a              ;F293: 26 F5          '&.'
+        BSR     DEBKEY_f2b9              ;F295: 8D 22          '."'
 ZF297   CLR     M0022                    ;F297: 0F 22          '."'
-ZF299   LDA     #$7F                     ;F299: 86 7F          '..'
+; IF NO KEY Y=0 ,STBKEY=$FF
+; KEY Y=ROW (1-8) & STBKEY=CLMN
+; GO THRU KB ONCE AND RTN ,IF ANY
+ONEKEY_f299 LDA     #$7F                     ;F299: 86 7F          '..'
         BRA     ZF2A0                    ;F29B: 20 03          ' .'
 ZF29D   SEC                              ;F29D: 1A 01          '..'
         RORA                             ;F29F: 46             'F'
-ZF2A0   STA     M0080                    ;F2A0: 97 80          '..'
+ZF2A0   STA     DRA2                     ;F2A0: 97 80          '..'
         STA     M0023                    ;F2A2: 97 23          '.#'
         LDB     #$08                     ;F2A4: C6 08          '..'
-        LDA     M0082                    ;F2A6: 96 82          '..'
+        LDA     DRB2                     ;F2A6: 96 82          '..'
         ORA     M0022                    ;F2A8: 9A 22          '."'
         STA     M007F                    ;F2AA: 97 7F          '..'
 ZF2AC   ASLA                             ;F2AC: 48             'H'
@@ -1236,8 +1247,8 @@ ZF2AC   ASLA                             ;F2AC: 48             'H'
         CMPA    #$FF                     ;F2B4: 81 FF          '..'
         BNE     ZF29D                    ;F2B6: 26 E5          '&.'
 ZF2B8   RTS                              ;F2B8: 39             '9'
-kb_debounce_f2b9 LDX     #z0000                   ;F2B9: 8E 00 00       '...'
-kb_delay_f2bc CLR     M0022                    ;F2BC: 0F 22          '."'
+DEBKEY_f2b9 LDX     #z0000                   ;F2B9: 8E 00 00       '...'
+DEBK1_f2bc CLR     M0022                    ;F2BC: 0F 22          '."'
         LDD     #M1388                   ;F2BE: CC 13 88       '...'
         PSHD                             ;F2C1: 34 06          '4.'
         LBRA    ZF194                    ;F2C3: 16 FE CE       '...'
@@ -1337,9 +1348,9 @@ ZF383   RTS                              ;F383: 39             '9'
 ; -- need to decode purpose of this too--
 unknown_f384 TST     MA3BB                    ;F384: 7D A3 BB       '}..'
         BEQ     ZF3B7                    ;F387: 27 2E          ''.'
-ZF389   BSR     ZF3CC                    ;F389: 8D 41          '.A'
+printbuf_f389 BSR     ZF3CC                    ;F389: 8D 41          '.A'
         LBSR    ZF422                    ;F38B: 17 00 94       '...'
-ZF38E   LDA     #$C1                     ;F38E: 86 C1          '..'
+adv_paper_f38e LDA     #$C1                     ;F38E: 86 C1          '..'
         STA     AIM_VIA_PCR              ;F390: B7 A8 0C       '...'
         BSR     ZF3B8                    ;F393: 8D 23          '.#'
         BNE     ZF3A7                    ;F395: 26 10          '&.'

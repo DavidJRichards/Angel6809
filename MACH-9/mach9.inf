@@ -20,9 +20,22 @@ const 0xee23-0xee8e
 
 label 0xF2C6 kbfn_f2c6
 label 0xf055 kbfn_f055
-label 0xf1ac kbfn_f1ac
+
+
+prepcomm 0xf1ac ;GET A CHAR FROM KB SUBROUTINE
+prepcomm 0xf1ac  ;FROM KB Y=ROW ,STBKEY=COLUMNS (STROBE)
+prepcomm 0xf1ac  ;X=CTRL OR SHIFT ,OTHERWISE X=0
+
+label 0xf1ac GETKEY_f1ac
+label 0xf1b2 getkey_f1b2
+label 0xf1b5 getkey_f1b5
 const 0xef9a-0xeff9 * keyboard decoder lookup
 label 0xef9a kb_data
+
+label 0xf28a ROONEK_f28a
+prepcomm 0xf28a ;wait if last ley still down
+
+
 
 const 0xefaa-0xefd9   * command table?
 
@@ -77,8 +90,10 @@ label 0xa40a AIM_SWI
 label 0xa40C AIM_NMI       
 
 label 0xA480 AIM_KEYBOARD_DRA2   
+label 0x80 DRA2
 label 0xA481 AIM_KEYBOARD_DDRA2   
 label 0xA482 AIM_KEYBOARD_DRB2   
+label 0x82 DRB2
 label 0xA483 AIM_KEYBOARD_DDRB2   
 
 label 0xA800 AIM_VIA_DRB
@@ -278,12 +293,27 @@ label 0xFE48 jmp60
 
 lcomment 0xf1ce cludge needed to make f1ce valid branch target above ????
 lcomment 0xf1b8 mask to CHCK CLMN 5,6,7
-lcomment 0xf1dd CTRL OR SHIFT ,SO WHICH ONE?
-const 0xf1ce
+lcomment 0xf1dd IF CLMN 5,6,7,8 TO IT AGAIN
+;const 0xf1ce
+prepcomm 0xf1d1 ZF1CF   LDB     #$10                     ;F1CF: C6 10          '..'
+
 lcomment 0xf23f 0x5C print line command ?
-label 0xf2b9 kb_debounce_f2b9
-label 0xf2bc kb_delay_f2bc
+label 0xf2b9 DEBKEY_f2b9
+label 0xf2bc DEBK1_f2bc
 lcomment 0xf3e4 printer chip at address 0xA8xx
+
+prepcomm 0xf1b8 ;CTRL OR SHIFT ?
+prepcomm 0xf1d5 ;NOW GET ANY KEY
+prepcomm 0xf1e5 ;WE HAVE A KEY ,DECODE IT
+
+label 0xf389 printbuf_f389
+label 0xf38e adv_paper_f38e
+
+prepcomm 0xf299 GO THRU KB ONCE AND RTN ,IF ANY
+prepcomm 0xf299 KEY Y=ROW (1-8) & STBKEY=CLMN
+prepcomm 0xf299 IF NO KEY Y=0 ,STBKEY=$FF
+label 0xf299 ONEKEY_f299
+
 
 prepcomm 0xf0ee -- display data in ,S at display addr index B
 prepcomm 0Xf0ee --  CONVERT B INTO REAL ADDR FOR DISPLAY --
