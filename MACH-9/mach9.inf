@@ -97,7 +97,9 @@ label 0x82 DRB2
 label 0xA483 AIM_KEYBOARD_DDRB2   
 
 label 0xA800 AIM_VIA_DRB
+label 0x00 VIA_DRB
 label 0xA801 AIM_VIA_DRAH
+label 0x01 VIA_DRAH
 label 0xA802 AIM_VIA_DDRB
 label 0xA803 AIM_VIA_DDRA
 label 0xA804 AIM_VIA_T1L
@@ -105,11 +107,15 @@ label 0xA805 AIM_VIA_T1CH
 label 0xA806 AIM_VIA_T1LL
 label 0xA807 AIM_VIA_T1LH
 label 0xA808 AIM_VIA_T2L
+label 0x08 VIA_T2L
 label 0xA809 AIM_VIA_T2H
+label 0x09 VIA_T2H
 label 0xA80A AIM_VIA_SR
 label 0xA80B AIM_VIA_ACR
 label 0xA80C AIM_VIA_PCR
+label 0x0c VIA_PCR
 label 0xA80D AIM_VIA_IFR
+label 0x0d VIA_IFR
 label 0xA80E AIM_VIA_IER
 label 0xA80F AIM_VIA_DRA
 
@@ -332,6 +338,7 @@ label 0xf01d op_crlf_f01d
 label 0xf04d op_spc_f04d
 label 0xf09f kb_chk_esc_F20F
 label f00c op_ntmsg_inx_f00c
+label 0xa41a ser_bit_delay_a41a
 label 0xa419 disp_idx_A419
 label 0xa418 display_idx_a418
 label 0xf378 spc-to-buf-end-f378
@@ -363,5 +370,13 @@ const 0xf99e-0xf9a5 ; bit values
 label 0xf99e bivals_f99e
 
 label 0xfe78 ReturnA_fe78
+
+label 0xa38c brktab_a38c
+label 0xa396 fnktab_a396
+label 0xa3e7 cc_store_a3e7
+label 0xa3e8 acA_store_a3e8
+label 0xa3ef stk_store_a3ef
+label 0xA3BB flg_print_a3bb
+
 
 

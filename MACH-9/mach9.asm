@@ -7,12 +7,12 @@ Loaded binary file Z22_M9IF.BIN
 ;****************************************************
 
 z0000   EQU     $0000
-M0001   EQU     $0001
+VIA_DRAH EQU     $0001
 M0002   EQU     $0002
-M0008   EQU     $0008
-M0009   EQU     $0009
-M000C   EQU     $000C
-M000D   EQU     $000D
+VIA_T2L EQU     $0008
+VIA_T2H EQU     $0009
+VIA_PCR EQU     $000C
+VIA_IFR EQU     $000D
 M0017   EQU     $0017
 M0018   EQU     $0018
 M0019   EQU     $0019
@@ -44,22 +44,22 @@ M00A4   EQU     $00A4
 M00BD   EQU     $00BD
 M00BE   EQU     $00BE
 M1388   EQU     $1388
-M3A58   EQU     $3A58
-M3D41   EQU     $3D41
+M6512   EQU     $6512
+M67FB   EQU     $67FB
 SET_T1LL_B EQU     $A001
 MA26D   EQU     $A26D
 MA28D   EQU     $A28D
-MA38C   EQU     $A38C
-MA396   EQU     $A396
+brktab_a38c EQU     $A38C
+fnktab_a396 EQU     $A396
 MA39B   EQU     $A39B
 MA3B8   EQU     $A3B8
 MA3BB   EQU     $A3BB
 MA3BC   EQU     $A3BC
 MA3D3   EQU     $A3D3
 MA3DD   EQU     $A3DD
-MA3E7   EQU     $A3E7
-MA3E8   EQU     $A3E8
-MA3EF   EQU     $A3EF
+cc_store_a3e7 EQU     $A3E7
+acA_store_a3e8 EQU     $A3E8
+stk_store_a3ef EQU     $A3EF
 ss_jump_vector_0xa3f1 EQU     $A3F1
 MA3F3   EQU     $A3F3
 MA3F4   EQU     $A3F4
@@ -76,7 +76,7 @@ kb_jump_vector_0xa414 EQU     $A414
 MA416   EQU     $A416
 display_idx_a418 EQU     $A418
 disp_idx_A419 EQU     $A419
-MA41A   EQU     $A41A
+ser_bit_delay_a41a EQU     $A41A
 userSWI_jump_0xa420 EQU     $A420
 MA423   EQU     $A423
 MA424   EQU     $A424
@@ -1091,7 +1091,7 @@ ZF175   LDA     AIM_VIA_DRB              ;F175: B6 A8 00       '...'
         PULS    PC,DP,B                  ;F18D: 35 8C          '5.'
 ; -- delay full bit time --
 dly_bit_f18f PSHD                             ;F18F: 34 06          '4.'
-        LDD     MA41A                    ;F191: FC A4 1A       '...'
+        LDD     ser_bit_delay_a41a       ;F191: FC A4 1A       '...'
 ZF194   STB     AIM_VIA_T2L              ;F194: F7 A8 08       '...'
         STA     AIM_VIA_T2H              ;F197: B7 A8 09       '...'
         LDA     #$20                     ;F19A: 86 20          '. '
@@ -1100,7 +1100,7 @@ ZF19C   BITA    AIM_VIA_IFR              ;F19C: B5 A8 0D       '...'
         PULS    PC,D                     ;F1A1: 35 86          '5.'
 ; -- delay half bit time --
 dly_half_f1a3 PSHD                             ;F1A3: 34 06          '4.'
-        LDD     MA41A                    ;F1A5: FC A4 1A       '...'
+        LDD     ser_bit_delay_a41a       ;F1A5: FC A4 1A       '...'
         LSRD                             ;F1A8: 44 56          'DV'
         BRA     ZF194                    ;F1AA: 20 E8          ' .'
 ; ;X=CTRL OR SHIFT ,OTHERWISE X=0
@@ -1393,32 +1393,32 @@ ZF3CC   LDA     #$05                     ;F3CC: 86 05          '..'
 ZF3E2   PSHS    DP                       ;F3E2: 34 08          '4.'
         LDA     #$A8                     ;F3E4: 86 A8          '..'    printer chip at address 0xA8xx
         TFR     A,DP                     ;F3E6: 1F 8B          '..'
-        CLR     M0001                    ;F3E8: 0F 01          '..'
-ZF3EA   LDA     M000D                    ;F3EA: 96 0D          '..'
+        CLR     VIA_DRAH                 ;F3E8: 0F 01          '..'
+ZF3EA   LDA     VIA_IFR                  ;F3EA: 96 0D          '..'
         ANDA    #$02                     ;F3EC: 84 02          '..'
         BEQ     ZF3EA                    ;F3EE: 27 FA          ''.'
-        LDA     M000C                    ;F3F0: 96 0C          '..'
+        LDA     VIA_PCR                  ;F3F0: 96 0C          '..'
         EORA    #$01                     ;F3F2: 88 01          '..'
-        STA     M000C                    ;F3F4: 97 0C          '..'
+        STA     VIA_PCR                  ;F3F4: 97 0C          '..'
         INC     MA477                    ;F3F6: 7C A4 77       '|.w'
         LDA     MA479                    ;F3F9: B6 A4 79       '..y'
         ORA     z0000                    ;F3FC: 9A 00          '..'
         STA     z0000                    ;F3FE: 97 00          '..'
         LDA     MA478                    ;F400: B6 A4 78       '..x'
-        STA     M0001                    ;F403: 97 01          '..'
+        STA     VIA_DRAH                 ;F403: 97 01          '..'
         LDA     #$A4                     ;F405: 86 A4          '..'
-        STA     M0008                    ;F407: 97 08          '..'
+        STA     VIA_T2L                  ;F407: 97 08          '..'
         LDA     #$06                     ;F409: 86 06          '..'
-        STA     M0009                    ;F40B: 97 09          '..'
+        STA     VIA_T2H                  ;F40B: 97 09          '..'
         BSR     ZF422                    ;F40D: 8D 13          '..'
         BSR     ZF41B                    ;F40F: 8D 0A          '..'
-        CLR     M0001                    ;F411: 0F 01          '..'
+        CLR     VIA_DRAH                 ;F411: 0F 01          '..'
         LDA     z0000                    ;F413: 96 00          '..'
         ANDA    #$FC                     ;F415: 84 FC          '..'
         STA     z0000                    ;F417: 97 00          '..'
         PULS    PC,DP                    ;F419: 35 88          '5.'
 ZF41B   LDA     #$20                     ;F41B: 86 20          '. '
-ZF41D   BITA    M000D                    ;F41D: 95 0D          '..'
+ZF41D   BITA    VIA_IFR                  ;F41D: 95 0D          '..'
         BEQ     ZF41D                    ;F41F: 27 FC          ''.'
         RTS                              ;F421: 39             '9'
 ; --function begin --
@@ -1805,7 +1805,7 @@ jf792   LDD     ,U                       ;F792: EC C4          '..'
         BPL     ZF79D                    ;F794: 2A 07          '*.'
         COMA                             ;F796: 43             'C'
         COMB                             ;F797: 53             'S'
-        ADDD    #M0001                   ;F798: C3 00 01       '...'
+        ADDD    #VIA_DRAH                ;F798: C3 00 01       '...'
         STD     ,U                       ;F79B: ED C4          '..'
 ZF79D   RTS                              ;F79D: 39             '9'
 jf79e   LDA     $01,U                    ;F79E: A6 41          '.A'
@@ -1846,7 +1846,7 @@ jf7da   LBSR    ZF9DD                    ;F7DA: 17 02 00       '...'
         ORA     #$40                     ;F7E1: 8A 40          '.@'
         STA     $02,X                    ;F7E3: A7 02          '..'
 ZF7E5   LDD     $04,X                    ;F7E5: EC 04          '..'
-        SUBD    #M0001                   ;F7E7: 83 00 01       '...'
+        SUBD    #VIA_DRAH                ;F7E7: 83 00 01       '...'
         STD     $06,X                    ;F7EA: ED 06          '..'
         RTS                              ;F7EC: 39             '9'
 jf7ed   LBSR    ZFB78                    ;F7ED: 17 03 88       '...'
@@ -1932,7 +1932,7 @@ ZF889   LEAY    $02,Y                    ;F889: 31 22          '1"'
         RTS                              ;F88B: 39             '9'
 jmp16   PSHS    CC                       ;F88C: 34 01          '4.'
         LDD     [$04,U]                  ;F88E: EC D8 04       '...'
-        ADDD    #M0001                   ;F891: C3 00 01       '...'
+        ADDD    #VIA_DRAH                ;F891: C3 00 01       '...'
         CMPD    ,U                       ;F894: 10 A3 C4       '...'
         BGT     ZF8A1                    ;F897: 2E 08          '..'
         STD     [$04,U]                  ;F899: ED D8 04       '...'
@@ -1957,7 +1957,7 @@ ZF8B9   LEAU    $06,U                    ;F8B9: 33 46          '3F'
         RTS                              ;F8BF: 39             '9'
 jmp18   PSHS    CC                       ;F8C0: 34 01          '4.'
         LDD     [$04,U]                  ;F8C2: EC D8 04       '...'
-        SUBD    #M0001                   ;F8C5: 83 00 01       '...'
+        SUBD    #VIA_DRAH                ;F8C5: 83 00 01       '...'
         CMPD    ,U                       ;F8C8: 10 A3 C4       '...'
         BLT     ZF8D5                    ;F8CB: 2D 08          '-.'
         STD     [$04,U]                  ;F8CD: ED D8 04       '...'
@@ -2001,7 +2001,7 @@ jmp21   LBSR    ZF874                    ;F90F: 17 FF 62       '..b'
         BHI     ZF93E                    ;F91E: 22 1E          '".'
         SUBD    ,X                       ;F920: A3 84          '..'
         LDX     $04,X                    ;F922: AE 04          '..'
-        CMPX    #M0001                   ;F924: 8C 00 01       '...'
+        CMPX    #VIA_DRAH                ;F924: 8C 00 01       '...'
         BEQ     ZF939                    ;F927: 27 10          ''.'
         CMPX    #M0002                   ;F929: 8C 00 02       '...'
         BNE     ZF932                    ;F92C: 26 04          '&.'
@@ -2142,7 +2142,7 @@ ZFA34   PULU    D                        ;FA34: 37 06          '7.'
         BEQ     ZFA3F                    ;FA38: 27 05          ''.'
         COMA                             ;FA3A: 43             'C'
         COMB                             ;FA3B: 53             'S'
-        ADDD    #M0001                   ;FA3C: C3 00 01       '...'
+        ADDD    #VIA_DRAH                ;FA3C: C3 00 01       '...'
 ZFA3F   STD     [,U++]                   ;FA3F: ED D1          '..'
         RTS                              ;FA41: 39             '9'
 ZFA42   BSR     ZFA5B                    ;FA42: 8D 17          '..'
@@ -2618,9 +2618,9 @@ jmp56   LDD     ,Y++                     ;FDE0: EC A1          '..'
         TFR     D,X                      ;FDE2: 1F 01          '..'
         BCS     ZFDE8                    ;FDE4: 25 02          '%.'
         LEAX    D,Y                      ;FDE6: 30 AB          '0.'
-ZFDE8   LDD     MA3E8                    ;FDE8: FC A3 E8       '...'
+ZFDE8   LDD     acA_store_a3e8           ;FDE8: FC A3 E8       '...'
         JSR     ,X                       ;FDEB: AD 84          '..'
-        STD     MA3E8                    ;FDED: FD A3 E8       '...'
+        STD     acA_store_a3e8           ;FDED: FD A3 E8       '...'
         LDU     M008D                    ;FDF0: DE 8D          '..'
         LBRA    ZFBF0                    ;FDF2: 16 FD FB       '...'
 jmp57   BCS     ZFDFE                    ;FDF5: 25 07          '%.'
@@ -2708,7 +2708,7 @@ ZFE89   RTS                              ;FE89: 39             '9'
 tb_fe8a TST     MA416                    ;FE8A: 7D A4 16       '}..'
         BEQ     ZFE91                    ;FE8D: 27 02          ''.'
         BSR     ReturnA_fe78             ;FE8F: 8D E7          '..'
-ZFE91   LDU     #MA3E7                   ;FE91: CE A3 E7       '...'
+ZFE91   LDU     #cc_store_a3e7           ;FE91: CE A3 E7       '...'
         PULU    S,Y,X,DP,D,CC            ;FE94: 37 7F          '7.'
         PSHS    CC                       ;FE96: 34 01          '4.'
         LDU     MA3F3                    ;FE98: FE A3 F3       '...'
@@ -2735,7 +2735,7 @@ CMP_T2L_ STA     $03,S                    ;FEC5: A7 63          '.c'
 ZFEC8   LDY     #MA39B                   ;FEC8: 10 8E A3 9B    '....'
         TST     $06,S                    ;FECC: 6D 66          'mf'
         BEQ     ZFED4                    ;FECE: 27 04          ''.'
-        LDY     #MA396                   ;FED0: 10 8E A3 96    '....'
+        LDY     #fnktab_a396             ;FED0: 10 8E A3 96    '....'
 ZFED4   RTS                              ;FED4: 39             '9'
 t7_fed5 BSR     ZFEC8                    ;FED5: 8D F1          '..'
         LDA     $03,S                    ;FED7: A6 63          '.c'
@@ -2746,13 +2746,13 @@ ta_fee0 LEAS    $02,S                    ;FEE0: 32 62          '2b'
 ZFEE2   LDB     #$0A                     ;FEE2: C6 0A          '..'
 ZFEE4   STB     MA3B8                    ;FEE4: F7 A3 B8       '...'
         STU     MA3F3                    ;FEE7: FF A3 F3       '...'
-        LDU     #MA3EF                   ;FEEA: CE A3 EF       '...'
+        LDU     #stk_store_a3ef          ;FEEA: CE A3 EF       '...'
         PULS    Y,X,DP,D,CC              ;FEED: 35 3F          '5?'
         PSHU    Y,X,DP,D,CC              ;FEEF: 36 3F          '6?'
         LDX     $02,S                    ;FEF1: AE 62          '.b'
         STX     ss_jump_vector_0xa3f1    ;FEF3: BF A3 F1       '...'
         LEAS    $04,S                    ;FEF6: 32 64          '2d'
-        STS     MA3EF                    ;FEF8: 10 FF A3 EF    '....'
+        STS     stk_store_a3ef           ;FEF8: 10 FF A3 EF    '....'
         CLIF                             ;FEFC: 1C AF          '..'
         BRA     ZFF2B                    ;FEFE: 20 2B          ' +'
 nNMI    LDA     #$A3                     ;FF00: 86 A3          '..'
@@ -2762,7 +2762,7 @@ nNMI    LDA     #$A3                     ;FF00: 86 A3          '..'
         DEX                              ;FF08: 30 1F          '0.'
         STX     M00A0                    ;FF0A: 9F A0          '..'
         BLE     ZFEE4                    ;FF0C: 2F D6          '/.'
-        LDY     #MA38C                   ;FF0E: 10 8E A3 8C    '....'
+        LDY     #brktab_a38c             ;FF0E: 10 8E A3 8C    '....'
         LDX     $0A,S                    ;FF12: AE 6A          '.j'
         LDA     #$05                     ;FF14: 86 05          '..'
 ZFF16   CMPX    ,Y++                     ;FF16: AC A1          '..'
