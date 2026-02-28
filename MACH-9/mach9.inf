@@ -1,9 +1,15 @@
-*file Z26_M9IB.BIN 0xB000
-*file Z25_M9IC.BIN 0xC000
-*file Z24_M9ID.BIN 0xD000
+file Z26_M9IB.BIN 0xB000
+file Z25_M9IC.BIN 0xC000
+file Z24_M9ID.BIN 0xD000
 file Z23_M9IE.BIN 0xE000
 file Z22_M9IF.BIN 0xF000
 option out mach9.asm
+
+const 0xbaea-0xbb70
+const 0xbbe5-0xbbf8
+const 0xbbfa
+const 0xbc06-0xbc0d
+
 
 const 0xe000-0xe9a8 * doesnt look like code
 const 0xe9a4-0xed61 * assembler
@@ -362,7 +368,15 @@ prepcomm 0XF3cc --function begin --
 prepcomm 0XF3e2 --function begin --
 prepcomm 0XF422 --function begin --
 prepcomm 0XF458 --function begin --
-prepcomm 0XF4a4 ------------- section of code begin ---------------
+prepcomm 0XF4a4 ------------- Input used by SWI 7 -------------
+prepcomm 0xf540 ------------- do rx timer things --------------
+prepcomm 0xf575 ------------- Output used by SWI 6 ------------
+prepcomm 0xf5c8 ------------- Tape motor on -------------------
+prepcomm 0xf5d6 ------------- Tape motor off ------------------
+prepcomm 0xf5e1 -----------------------------------------------
+prepcomm 0xf613 ------------- Get rx using timer --------------
+prepcomm 0xfaaa ------------- Input routing switch ------------
+prepcomm 0xfb3c ------------- Output routing switch -----------
 prepcomm 0XF656 ------------- Function despatch ---------------
 prepcomm 0XFE48 ------------- VECTORS AND JUMPS ---------------
 
