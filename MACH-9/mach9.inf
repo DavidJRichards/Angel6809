@@ -180,8 +180,8 @@ prepcomm 0XFe59 -- 2 conout feb6 --
 prepcomm 0XFe59 -- 3 conout febb --
 prepcomm 0XFe59 -- 4 f01d  --
 prepcomm 0XFe59 -- 5 f04d  --
-prepcomm 0XFe59 -- 6 fec0  --
-prepcomm 0XFe59 -- 7 fed5  --
+prepcomm 0XFe59 -- 6 fec0  -- Tape output
+prepcomm 0XFe59 -- 7 fed5  -- Tape input
 prepcomm 0XFe59 -- 8 abort ff26  --
 prepcomm 0XFe59 -- 9 fedc  --
 prepcomm 0XFe59 -- A fee0  --
