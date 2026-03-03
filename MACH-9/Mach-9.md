@@ -75,16 +75,27 @@ Use f9dasm to re-create assmbler source files from binary rom images
 ### Assembler
 Assembler accetps nemonics and some commands including: 
 
-* ORG
-* END 
-* FORM 
-* LIST 
-* NAME 
-* PAGE
+* ORG, END, FORM, LIST, NAME, PAGE (syntax unknown)
 
-To assemble some code the source and destinations have to be set, to assemble the code in the text editor the default source is the memory device at adderss 0. The output can be the memoory device at, say, address 1000 to match the code origin.
+To assemble some code the source and destinations have to be set, to assemble the code in the text editor the default source is the memory device at adderss 0. The output can be the memory device at address 1000 to match the code origin.
 
 To avoid overwriting the assembler binary output reset the Destination address after successfull assembly.
 
+### 6850 ACIA source code example 
 example assembler program to use 6850 ACIA as user Input and output [userio.asm](./userio.asm)
 
+The source code to be imported into editor using TTY serial port. Enter editor with 'E' command, then insert lines with 'I' command. At this point the contenrs oof userio.asm should be copiied to the serial port, afterwards type <ctrl> Z to termiante.
+
+To assemble into memory the Source should be set to memory address 0  and the destination should be set to address 1000 Using the > command followed by S and M and source address 0 then > followed by D and M then typing the load address 1000 and length 100
+
+The two pass assembleer is used since forward references have been used in the source file, Use the N command, if successful the output will now be at address 1000
+
+Change the destination address before proceeding because some other commands use it (dissasemble, K, for instance) use > D M K to make the console the output destination.
+
+The program initialses the ACIA to operate at 9600 bps and sets the User input and output vectors to send and receive serial data. it also sets the F1 function key to repeat the initialisation sequence.
+
+Run the program initilaisation by setting the program counter to 1000 and issuing a go command. (* 1000 G)
+
+Successfull execution is indicated by the message 'Init 6850 ACIA' being output to the console before a warm start is executed.
+
+It is then possible to have a fast serial console by setting the 

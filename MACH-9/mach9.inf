@@ -3,6 +3,9 @@ file Z25_M9IC.BIN 0xC000
 file Z24_M9ID.BIN 0xD000
 file Z23_M9IE.BIN 0xE000
 file Z22_M9IF.BIN 0xF000
+
+unused 0xb000-0xe9a8 ; not worked on this area yet
+
 option out mach9.asm
 
 const 0xbaea-0xbb70
@@ -11,7 +14,7 @@ const 0xbbfa
 const 0xbc06-0xbc0d
 
 
-const 0xe000-0xe9a8 * doesnt look like code
+;const 0xe000-0xe9a8 * doesnt look like code
 const 0xe9a4-0xed61 * assembler
 const 0xed62-0xee21 * unknown - doesnt look like code
 label 0xe9a9 asm_e9a9

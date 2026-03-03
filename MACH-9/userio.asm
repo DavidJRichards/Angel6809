@@ -13,16 +13,29 @@ aset equ $15
 userin equ $a410
 userout equ $a412
 f1key equ $a386
+
 restart equ $f000
+msgprint equ $f018
 
  org $1000
- jmp setup
+setup pshs x
+ ldx #serin
+ stx userin
+ ldx #serout
+ stx userout
+ ldx #setup
+ stx f1key
+ bsr init
+ ldx #msg
+ lbsr msgprint
+ puls x
+ jmp restart
 
 init pshs a
  lda #arst
- sta $9000
+ sta aciac
  lda #aset
- sta $9000
+ sta aciac
  puls a,pc
 
 serout pshs b
@@ -38,16 +51,8 @@ serin lda aciac
  lda aciad
  rts
 
-setup pshs d 
- ldd #serin
- std userin
- ldd #serout
- std userout
- ldd setup
- std f1key
- bsr init
- puls d
- jmp restart
+msg fcc "Init 6850 ACIA"
+ fcb 0
 
  end
 
